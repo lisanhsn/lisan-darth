@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sword, Shield, Zap, Contact, Home } from "lucide-react";
+import { useMobile } from "../hooks/useMobile";
 
 const navigationItems = [
   {
@@ -41,6 +42,8 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isMobile = useMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,27 +84,34 @@ export default function Navigation() {
             ? "bg-space-black bg-opacity-95 backdrop-blur-md border-b border-imperial-gray"
             : "bg-transparent"
         }`}
-        initial={{ y: -100 }}
+        initial={{ y: isMobile ? 0 : -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: isMobile ? 0.3 : 0.6 }}
+        style={{ willChange: "transform" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Imperial Logo */}
             <motion.div
               className="flex items-center space-x-3"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={isMobile ? {} : { scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              style={{ willChange: "transform" }}
             >
               <div className="w-10 h-10 relative">
                 <motion.div
                   className="w-full h-full border-2 border-imperial-red rounded-full bg-imperial-black"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
+                  animate={isMobile ? {} : { rotate: 360 }}
+                  transition={
+                    isMobile
+                      ? {}
+                      : {
+                          duration: 20,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }
+                  }
+                  style={{ willChange: isMobile ? "auto" : "transform" }}
                 >
                   <div className="absolute inset-1 border border-imperial-gold rounded-full">
                     <div className="absolute inset-1 bg-imperial-red rounded-full lightsaber-glow opacity-80" />
@@ -133,8 +143,9 @@ export default function Navigation() {
                         ? "text-imperial-gold bg-imperial-red bg-opacity-20 border border-imperial-red"
                         : "text-imperial-white hover:text-imperial-gold"
                     }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={isMobile ? {} : { scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    style={{ willChange: "transform" }}
                   >
                     <div className="flex items-center space-x-2">
                       <IconComponent size={16} />

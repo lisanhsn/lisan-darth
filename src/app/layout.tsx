@@ -68,9 +68,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="theme-color" content="#000000" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className="bg-imperial-black text-primary font-inter antialiased text-readable">
-        <div className="star-field" />
-        {children}
+      <body
+        className="bg-imperial-black text-primary font-inter antialiased text-readable"
+        style={{
+          transform: "translateZ(0)",
+          backfaceVisibility: "hidden",
+          perspective: "1000px",
+        }}
+      >
+        <div className="star-field" style={{ willChange: "transform" }} />
+        <div style={{ willChange: "transform" }}>{children}</div>
       </body>
     </html>
   );

@@ -16,6 +16,7 @@ import {
   Palette,
 } from "lucide-react";
 import SkillsBackground3D from "@/components/3d/SkillsBackground3D";
+import { useMobile } from "../../hooks/useMobile";
 
 const skillCategories = {
   frontend: {
@@ -107,10 +108,12 @@ const skillCategories = {
 export default function SkillsSection() {
   const [activeCategory, setActiveCategory] =
     useState<keyof typeof skillCategories>("frontend");
-  const { ref, inView } = useInView({ threshold: 0.3 });
+  const { ref, inView } = useInView({ threshold: 0.1 });
+  const isMobile = useMobile();
 
   useEffect(() => {
-    if (inView) {
+    // Disable auto-rotation on mobile for better performance
+    if (!isMobile && inView) {
       const interval = setInterval(() => {
         const categories = Object.keys(
           skillCategories
@@ -122,7 +125,7 @@ export default function SkillsSection() {
       }, 5000);
       return () => clearInterval(interval);
     }
-  }, [inView]);
+  }, [isMobile, inView]);
 
   const currentCategory = skillCategories[activeCategory];
 
@@ -131,9 +134,14 @@ export default function SkillsSection() {
       ref={ref}
       id="skills"
       className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-sith-gradient overflow-hidden"
+      style={{
+        willChange: "transform",
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+      }}
     >
-      {/* 3D Background */}
-      <SkillsBackground3D />
+      {/* 3D Background - Desktop only */}
+      {!isMobile && <SkillsBackground3D />}
 
       {/* Simple Background Effect */}
       <div className="absolute inset-0 opacity-10">
@@ -144,23 +152,35 @@ export default function SkillsSection() {
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, y: isMobile ? 0 : 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: isMobile ? 0.3 : 0.8,
+            delay: isMobile ? 0 : 0.1,
+          }}
+          style={{ willChange: "transform, opacity" }}
         >
           <motion.h2
             className="text-5xl md:text-6xl font-orbitron font-black text-imperial-red mb-6"
-            initial={{ scale: 0.5 }}
-            animate={{ scale: inView ? 1 : 0.5 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ scale: isMobile ? 1 : 0.5 }}
+            animate={{ scale: 1 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.8,
+              delay: isMobile ? 0.1 : 0.2,
+            }}
+            style={{ willChange: "transform" }}
           >
             LIGHTSABER TRAINING
           </motion.h2>
           <motion.p
             className="text-xl text-imperial-gold max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
-            animate={{ opacity: inView ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.8,
+              delay: isMobile ? 0.2 : 0.4,
+            }}
+            style={{ willChange: "opacity" }}
           >
             Witness the Force powers and technical abilities mastered through
             years of dedicated training in the dark arts of development.
@@ -170,8 +190,12 @@ export default function SkillsSection() {
           <motion.div
             className="mt-8 flex justify-center"
             initial={{ opacity: 0 }}
-            animate={{ opacity: inView ? 1 : 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.5,
+              delay: isMobile ? 0.3 : 0.8,
+            }}
+            style={{ willChange: "opacity" }}
           >
             <div
               className="w-1 h-16 rounded-full"
@@ -187,9 +211,13 @@ export default function SkillsSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Category Selector */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : -50 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            initial={{ opacity: 0, x: isMobile ? 0 : -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.8,
+              delay: isMobile ? 0.4 : 0.6,
+            }}
+            style={{ willChange: "transform, opacity" }}
           >
             <h3 className="text-3xl font-orbitron font-bold text-imperial-gold mb-8">
               FORCE DISCIPLINES

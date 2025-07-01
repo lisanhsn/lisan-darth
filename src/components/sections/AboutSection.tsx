@@ -4,104 +4,117 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import ImmersiveScrollContainer from "@/components/3d/ImmersiveScrollContainer";
+import { useMobile } from "../../hooks/useMobile";
 
 export default function AboutSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const { ref, inView } = useInView({ threshold: 0.2 });
+  const { ref, inView } = useInView({ threshold: 0.1 });
+  const isMobile = useMobile();
 
   useEffect(() => {
-    setIsVisible(inView);
-  }, [inView]);
+    // Immediate display on mobile for faster loading
+    setIsVisible(isMobile ? true : inView);
+  }, [isMobile, inView]);
 
   return (
     <section
       ref={ref}
       id="about"
       className="relative min-h-screen py-10 sm:py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black"
+      style={{
+        willChange: "transform",
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+      }}
     >
-      {/* Imperial Atmosphere Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Death Star */}
-        <motion.div
-          className="absolute top-20 right-20 w-32 h-32 rounded-full opacity-20"
-          style={{
-            background:
-              "radial-gradient(circle, #6b7280 0%, #374151 50%, #1f2937 70%, transparent 100%)",
-            filter: "blur(1px)",
-            border: "2px solid rgba(220, 38, 38, 0.3)",
-          }}
-          animate={{
-            rotate: [0, 360],
-            scale: [1, 1.05, 1],
-            opacity: [0.15, 0.25, 0.15],
-          }}
-          transition={{ duration: 30, repeat: Infinity }}
+      {/* Imperial Atmosphere Effects - Optimized for mobile */}
+      {!isMobile && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ willChange: "transform" }}
         >
-          {/* Death Star Laser */}
-          <div
-            className="absolute top-4 left-4 w-3 h-3 rounded-full"
-            style={{
-              background: "radial-gradient(circle, #dc2626 0%, #991b1b 100%)",
-              boxShadow: "0 0 10px rgba(220, 38, 38, 0.8)",
-            }}
-          />
-        </motion.div>
-
-        {/* Imperial Star Destroyer Silhouette */}
-        <motion.div
-          className="absolute top-40 left-20 opacity-10"
-          animate={{
-            x: [-50, 50, -50],
-            opacity: [0.05, 0.15, 0.05],
-          }}
-          transition={{ duration: 20, repeat: Infinity }}
-        >
-          <div
-            className="w-40 h-8 bg-gradient-to-r from-transparent via-imperial-gray to-transparent"
-            style={{
-              clipPath: "polygon(0% 50%, 100% 20%, 100% 80%)",
-            }}
-          />
-        </motion.div>
-
-        {/* Space Debris Particles */}
-        {Array.from({ length: 12 }).map((_, i) => (
+          {/* Death Star */}
           <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-imperial-blue rounded-full opacity-30"
+            className="absolute top-20 right-20 w-32 h-32 rounded-full opacity-20"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              boxShadow: "0 0 4px rgba(30, 64, 175, 0.5)",
+              background:
+                "radial-gradient(circle, #6b7280 0%, #374151 50%, #1f2937 70%, transparent 100%)",
+              filter: "blur(1px)",
+              border: "2px solid rgba(220, 38, 38, 0.3)",
             }}
             animate={{
-              x: [0, 150, -50, 0],
-              y: [0, Math.random() * 30 - 15, 0],
-              opacity: [0, 0.4, 0.1, 0],
-              scale: [0.5, 1, 0.8, 0.5],
+              rotate: [0, 360],
+              scale: [1, 1.05, 1],
+              opacity: [0.15, 0.25, 0.15],
             }}
-            transition={{
-              duration: 12 + Math.random() * 6,
-              repeat: Infinity,
-              delay: Math.random() * 8,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
+            transition={{ duration: 30, repeat: Infinity }}
+          >
+            {/* Death Star Laser */}
+            <div
+              className="absolute top-4 left-4 w-3 h-3 rounded-full"
+              style={{
+                background: "radial-gradient(circle, #dc2626 0%, #991b1b 100%)",
+                boxShadow: "0 0 10px rgba(220, 38, 38, 0.8)",
+              }}
+            />
+          </motion.div>
 
-        {/* Imperial Energy Field */}
-        <motion.div
-          className="absolute inset-0 opacity-10"
-          animate={{
-            background: [
-              "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
-              "linear-gradient(180deg, transparent 0%, rgba(220, 38, 38, 0.03) 50%, transparent 100%)",
-              "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
-            ],
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-      </div>
+          {/* Imperial Star Destroyer Silhouette */}
+          <motion.div
+            className="absolute top-40 left-20 opacity-10"
+            animate={{
+              x: [-50, 50, -50],
+              opacity: [0.05, 0.15, 0.05],
+            }}
+            transition={{ duration: 20, repeat: Infinity }}
+          >
+            <div
+              className="w-40 h-8 bg-gradient-to-r from-transparent via-imperial-gray to-transparent"
+              style={{
+                clipPath: "polygon(0% 50%, 100% 20%, 100% 80%)",
+              }}
+            />
+          </motion.div>
+
+          {/* Space Debris Particles */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-imperial-blue rounded-full opacity-30"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                boxShadow: "0 0 4px rgba(30, 64, 175, 0.5)",
+              }}
+              animate={{
+                x: [0, 150, -50, 0],
+                y: [0, Math.random() * 30 - 15, 0],
+                opacity: [0, 0.4, 0.1, 0],
+                scale: [0.5, 1, 0.8, 0.5],
+              }}
+              transition={{
+                duration: 12 + Math.random() * 6,
+                repeat: Infinity,
+                delay: Math.random() * 8,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
+          {/* Imperial Energy Field */}
+          <motion.div
+            className="absolute inset-0 opacity-10"
+            animate={{
+              background: [
+                "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
+                "linear-gradient(180deg, transparent 0%, rgba(220, 38, 38, 0.03) 50%, transparent 100%)",
+                "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
+              ],
+            }}
+            transition={{ duration: 8, repeat: Infinity }}
+          />
+        </div>
+      )}
 
       <ImmersiveScrollContainer
         className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12"
@@ -121,12 +134,16 @@ export default function AboutSection() {
             {/* Section Badge */}
             <motion.div
               className="inline-flex items-center space-x-3 bg-tatooine-sunset px-6 py-3 rounded-full backdrop-blur-sm border border-tatooine-orange"
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: isMobile ? 1 : 0.8, opacity: 0 }}
               animate={{
-                scale: isVisible ? 1 : 0.8,
-                opacity: isVisible ? 1 : 0,
+                scale: 1,
+                opacity: 1,
               }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{
+                duration: isMobile ? 0.3 : 0.8,
+                delay: isMobile ? 0 : 0.2,
+              }}
+              style={{ willChange: "transform, opacity" }}
             >
               <motion.div
                 className="w-3 h-3 bg-tatooine-orange rounded-full"
@@ -144,12 +161,16 @@ export default function AboutSection() {
             {/* Main Heading */}
             <motion.h2
               className="text-5xl md:text-6xl lg:text-7xl font-orbitron font-black leading-tight"
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: isMobile ? 0 : 50 }}
               animate={{
-                opacity: isVisible ? 1 : 0,
-                y: isVisible ? 0 : 50,
+                opacity: 1,
+                y: 0,
               }}
-              transition={{ duration: 1, delay: 0.7 }}
+              transition={{
+                duration: isMobile ? 0.3 : 1,
+                delay: isMobile ? 0.1 : 0.3,
+              }}
+              style={{ willChange: "transform, opacity" }}
             >
               <span className="hologram-blue">FROM THE</span>
               <br />

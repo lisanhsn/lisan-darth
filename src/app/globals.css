@@ -494,3 +494,123 @@ a:focus-visible {
     transform: rotate(360deg) translateZ(0);
   }
 }
+
+/* === ADVANCED MOBILE OPTIMIZATIONS === */
+@media (max-width: 768px) {
+  /* Critical Performance CSS */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Reduce reflows and repaints */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  div,
+  span {
+    will-change: auto;
+  }
+
+  /* Optimize image rendering */
+  img {
+    image-rendering: optimizeQuality;
+    transform: translateZ(0);
+  }
+
+  /* Faster transitions */
+  .transition-all {
+    transition-duration: 0.2s !important;
+  }
+
+  .transition-colors {
+    transition-duration: 0.15s !important;
+  }
+
+  /* Disable expensive hover effects */
+  .group:hover .group-hover\:scale-110 {
+    transform: none !important;
+  }
+
+  /* Mobile scroll optimizations */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Reduce motion for better performance */
+  .animate-bounce {
+    animation: none !important;
+  }
+
+  /* Optimize form inputs */
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  /* GPU accelerated layout */
+  main,
+  section,
+  header,
+  footer {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Memory optimizations */
+  .backdrop-blur-md {
+    backdrop-filter: blur(8px) !important;
+  }
+
+  .backdrop-blur-lg {
+    backdrop-filter: blur(12px) !important;
+  }
+
+  /* Fast loading indicators */
+  .loading {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* === PREFETCH OPTIMIZATIONS === */
+@media (hover: none) and (pointer: coarse) {
+  /* Mobile-specific touch optimizations */
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  /* Prevent zoom on double tap */
+  * {
+    touch-action: manipulation;
+  }
+}
+
+/* === PERFORMANCE HINTS === */
+.force-gpu {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+.optimize-text {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+}
+
+.optimize-animations {
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
