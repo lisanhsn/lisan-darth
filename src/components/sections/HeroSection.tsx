@@ -10,6 +10,7 @@ import DarthVaderHelmet from "@/components/3d/DarthVaderHelmet";
 import SVGDarthVader from "@/components/3d/SVGDarthVader";
 import EnhancedSVGDarthVader from "@/components/3d/EnhancedSVGDarthVader";
 import InteractiveHeroScene from "@/components/3d/InteractiveHeroScene";
+import FlyingSpaceship from "@/components/3d/FlyingSpaceship";
 import { useMobile } from "../../hooks/useMobile";
 
 export default function HeroSection() {
@@ -82,16 +83,98 @@ export default function HeroSection() {
               <Float speed={0.5} rotationIntensity={0.3} floatIntensity={0.3}>
                 <DarthVaderHelmet position={[4, 2, -5]} scale={0.6} />
               </Float>
+
+              {/* Flying Spaceships with boost mode */}
+              <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
+              <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
+
               <ambientLight intensity={0.3} />
               <pointLight position={[10, 10, 10]} intensity={0.5} />
+              <pointLight
+                position={[-10, -10, 5]}
+                intensity={0.3}
+                color="#ff6b35"
+              />
             </Suspense>
           </Canvas>
         </div>
       )}
 
-      {/* Mobile-optimized static background */}
+      {/* Mobile-optimized background with flying spaceship */}
       {isMobile && (
-        <div className="absolute inset-0 bg-gradient-to-br from-space-dark via-red-900/20 to-black opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-br from-space-dark via-red-900/20 to-black opacity-60">
+          {/* Mobile 2D Flying Spaceship */}
+          <motion.div
+            className="absolute top-1/3 left-0 w-8 h-8"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{
+              x: typeof window !== "undefined" ? window.innerWidth + 50 : 400,
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              delay: 3,
+              ease: "easeInOut",
+            }}
+          >
+            <div className="relative">
+              {/* Spaceship body */}
+              <div className="w-6 h-2 bg-imperial-red rounded-full relative z-10">
+                <div className="absolute -left-1 top-0 w-2 h-2 bg-imperial-gold rounded-full"></div>
+              </div>
+              {/* Engine trail */}
+              <motion.div
+                className="absolute -right-2 top-0.5 w-4 h-1 bg-gradient-to-r from-blue-400 to-transparent rounded-full"
+                animate={{
+                  width: [16, 24, 16],
+                  opacity: [0.6, 1, 0.6],
+                }}
+                transition={{
+                  duration: 0.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </div>
+          </motion.div>
+
+          {/* Second mobile spaceship with different timing */}
+          <motion.div
+            className="absolute top-2/3 left-0 w-6 h-6"
+            initial={{ x: -40, opacity: 0 }}
+            animate={{
+              x: typeof window !== "undefined" ? window.innerWidth + 40 : 380,
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              delay: 7,
+              ease: "easeInOut",
+            }}
+          >
+            <div className="relative">
+              {/* Smaller spaceship */}
+              <div className="w-4 h-1.5 bg-energy-blue rounded-full relative z-10">
+                <div className="absolute -left-0.5 top-0 w-1.5 h-1.5 bg-imperial-gold rounded-full"></div>
+              </div>
+              {/* Engine trail */}
+              <motion.div
+                className="absolute -right-1.5 top-0.5 w-3 h-0.5 bg-gradient-to-r from-orange-400 to-transparent rounded-full"
+                animate={{
+                  width: [12, 18, 12],
+                  opacity: [0.5, 0.9, 0.5],
+                }}
+                transition={{
+                  duration: 0.3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </div>
+          </motion.div>
+        </div>
       )}
 
       {/* Main Content Grid */}
