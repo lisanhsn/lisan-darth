@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Stars, Float } from "@react-three/drei";
 import { Mesh, Group } from "three";
-import { motion } from "framer-motion";
 
 interface InteractiveVaderProps {
   position?: [number, number, number];

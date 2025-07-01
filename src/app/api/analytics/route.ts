@@ -1,15 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Define types for analytics data
+interface AnalyticsEvent {
+  type: string;
+  data?: Record<string, unknown>;
+  serverTimestamp?: string;
+  ip?: string;
+  country?: string;
+  city?: string;
+}
+
+interface EventCount {
+  event: string;
+  count: number;
+}
+
+interface CountryCount {
+  country: string;
+  count: number;
+}
+
 // In a production environment, you'd want to use a proper database
 // For now, we'll use a simple in-memory store (resets on server restart)
-const analyticsData: any[] = [];
+const analyticsData: AnalyticsEvent[] = [];
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
     
     // Add server-side enrichment
-    const enrichedData = {
+    const enrichedData: AnalyticsEvent = {
       ...data,
       serverTimestamp: new Date().toISOString(),
       ip: request.ip || 'unknown',
@@ -44,7 +64,7 @@ export async function GET(request: NextRequest) {
   cutoffDate.setDate(cutoffDate.getDate() - days);
   
   const recentData = analyticsData.filter(
-    item => new Date(item.serverTimestamp) > cutoffDate
+    item => new Date(item.serverTimestamp || '') > cutoffDate
   );
   
   // Calculate metrics
@@ -62,11 +82,11 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(metrics);
 }
 
-function getTopEvents(data: any[]) {
+function getTopEvents(data: AnalyticsEvent[]): EventCount[] {
   const eventCounts: Record<string, number> = {};
   data.forEach(item => {
     if (item.type === 'event') {
-      const eventName = item.data?.eventName || 'unknown';
+      const eventName = (item.data?.eventName as string) || 'unknown';
       eventCounts[eventName] = (eventCounts[eventName] || 0) + 1;
     }
   });
@@ -77,22 +97,25 @@ function getTopEvents(data: any[]) {
     .map(([event, count]) => ({ event, count }));
 }
 
-function calculateConversionRate(data: any[]) {
+function calculateConversionRate(data: AnalyticsEvent[]): number {
   const conversions = data.filter(item => item.type === 'conversion').length;
   const totalSessions = new Set(data.map(item => item.data?.user_id).filter(Boolean)).size;
   return totalSessions > 0 ? (conversions / totalSessions) * 100 : 0;
 }
 
-function calculateAverageSessionTime(data: any[]) {
+function calculateAverageSessionTime(data: AnalyticsEvent[]): number {
   const sessionTimes = data
     .filter(item => item.type === 'event' && item.data?.eventName === 'section_time')
-    .map(item => item.data?.time_spent || 0);
+    .map(item => {
+      const timeSpent = item.data?.time_spent;
+      return typeof timeSpent === 'number' ? timeSpent : 0;
+    });
   
   if (sessionTimes.length === 0) return 0;
   return sessionTimes.reduce((sum, time) => sum + time, 0) / sessionTimes.length;
 }
 
-function getTopCountries(data: any[]) {
+function getTopCountries(data: AnalyticsEvent[]): CountryCount[] {
   const countryCounts: Record<string, number> = {};
   data.forEach(item => {
     const country = item.country || 'unknown';
@@ -105,19 +128,19 @@ function getTopCountries(data: any[]) {
     .map(([country, count]) => ({ country, count }));
 }
 
-function calculateErrorRate(data: any[]) {
+function calculateErrorRate(data: AnalyticsEvent[]): number {
   const errors = data.filter(item => item.type === 'error').length;
   const totalEvents = data.filter(item => item.type === 'event').length;
   return totalEvents > 0 ? (errors / totalEvents) * 100 : 0;
 }
 
-function getPerformanceMetrics(data: any[]) {
+function getPerformanceMetrics(data: AnalyticsEvent[]): Record<string, number> {
   const performanceData = data.filter(item => item.type === 'metric');
   
   const metrics: Record<string, number[]> = {};
   performanceData.forEach(item => {
-    const metricName = item.data?.name;
-    const value = item.data?.value;
+    const metricName = item.data?.name as string;
+    const value = item.data?.value as number;
     if (metricName && typeof value === 'number') {
       if (!metrics[metricName]) metrics[metricName] = [];
       metrics[metricName].push(value);

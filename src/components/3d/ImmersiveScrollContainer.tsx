@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 
 interface ImmersiveScrollContainerProps {
@@ -28,20 +28,24 @@ export default function ImmersiveScrollContainer({
   });
 
   // Parallax transforms based on speed
-  const getParallaxTransform = () => {
+  const slowTransform = useTransform(scrollYProgress, [0, 1], [-50, 50]);
+  const mediumTransform = useTransform(scrollYProgress, [0, 1], [-100, 100]);
+  const fastTransform = useTransform(scrollYProgress, [0, 1], [-150, 150]);
+
+  const getY = () => {
     switch (parallaxSpeed) {
       case "slow":
-        return useTransform(scrollYProgress, [0, 1], [-50, 50]);
+        return slowTransform;
       case "medium":
-        return useTransform(scrollYProgress, [0, 1], [-100, 100]);
+        return mediumTransform;
       case "fast":
-        return useTransform(scrollYProgress, [0, 1], [-150, 150]);
+        return fastTransform;
       default:
-        return useTransform(scrollYProgress, [0, 1], [-100, 100]);
+        return mediumTransform;
     }
   };
 
-  const y = getParallaxTransform();
+  const y = getY();
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 

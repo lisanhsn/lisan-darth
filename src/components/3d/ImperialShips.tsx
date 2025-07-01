@@ -7,7 +7,7 @@ import { Group } from "three";
 export default function ImperialShips() {
   const shipsRef = useRef<Group>(null);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (shipsRef.current) {
       // Orbit around the scene
       shipsRef.current.rotation.y += 0.003;
@@ -38,7 +38,7 @@ export default function ImperialShips() {
       {/* Cockpit Window */}
       <mesh position={[0, 0, 0.31]}>
         <circleGeometry args={[0.15, 16]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#00BFFF"
           emissive="#00BFFF"
           emissiveIntensity={0.3}
@@ -48,7 +48,7 @@ export default function ImperialShips() {
       {/* Engine Glow */}
       <mesh position={[0, 0, -0.4]}>
         <sphereGeometry args={[0.1, 8, 8]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#00BFFF"
           emissive="#00BFFF"
           emissiveIntensity={1}
@@ -83,7 +83,7 @@ export default function ImperialShips() {
       {/* Engine Trails */}
       <mesh position={[-0.2, -0.1, -1.2]}>
         <cylinderGeometry args={[0.03, 0.03, 0.3, 8]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#00BFFF"
           emissive="#00BFFF"
           emissiveIntensity={0.8}
@@ -91,7 +91,7 @@ export default function ImperialShips() {
       </mesh>
       <mesh position={[0.2, -0.1, -1.2]}>
         <cylinderGeometry args={[0.03, 0.03, 0.3, 8]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#00BFFF"
           emissive="#00BFFF"
           emissiveIntensity={0.8}
@@ -99,7 +99,7 @@ export default function ImperialShips() {
       </mesh>
       <mesh position={[0, -0.1, -1.2]}>
         <cylinderGeometry args={[0.03, 0.03, 0.3, 8]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#00BFFF"
           emissive="#00BFFF"
           emissiveIntensity={0.8}
@@ -137,7 +137,7 @@ export default function ImperialShips() {
         </mesh>
         <mesh position={[0, 0, -1.2]}>
           <sphereGeometry args={[0.05, 8, 8]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             color="#00BFFF"
             emissive="#00BFFF"
             emissiveIntensity={1}
@@ -156,7 +156,7 @@ export default function ImperialShips() {
         </mesh>
         <mesh position={[0, 0, -1.2]}>
           <sphereGeometry args={[0.05, 8, 8]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             color="#00BFFF"
             emissive="#00BFFF"
             emissiveIntensity={1}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 interface EnhancedSVGDarthVaderProps {
@@ -13,7 +13,6 @@ interface EnhancedSVGDarthVaderProps {
 export default function EnhancedSVGDarthVader({
   mousePosition = { x: 0, y: 0 },
   className = "",
-  isInteracting = false,
   onClick,
 }: EnhancedSVGDarthVaderProps) {
   const [isHovered, setIsHovered] = useState(false);

@@ -3,7 +3,7 @@
 import React, { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Canvas } from "@react-three/fiber";
-import { Sphere, Ring } from "@react-three/drei";
+import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
 function DeathStarDistant() {
