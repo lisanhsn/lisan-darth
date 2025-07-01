@@ -146,13 +146,13 @@ export default function ContactSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
           transition={{ duration: 0.8 }}
         >
           <motion.h2
-            className="text-5xl md:text-6xl font-orbitron font-black text-imperial-red mb-6 sith-text heading-imperial"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-red mb-4 sm:mb-6 sith-text heading-imperial"
             initial={{ scale: 0.5 }}
             animate={{ scale: inView ? 1 : 0.5 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -160,7 +160,7 @@ export default function ContactSection() {
             IMPERIAL TRANSMISSION
           </motion.h2>
           <motion.p
-            className="text-xl text-imperial-gold font-inter max-w-3xl mx-auto text-readable gold-glow"
+            className="text-base sm:text-lg lg:text-xl text-imperial-gold font-inter max-w-3xl mx-auto text-readable gold-glow"
             initial={{ opacity: 0 }}
             animate={{ opacity: inView ? 1 : 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -170,18 +170,18 @@ export default function ContactSection() {
           </motion.p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-start">
           {/* Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : -50 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <h3 className="text-3xl font-orbitron font-bold text-imperial-gold mb-8 heading-imperial gold-glow">
+            <h3 className="text-2xl sm:text-3xl font-orbitron font-bold text-imperial-gold mb-6 sm:mb-8 heading-imperial gold-glow">
               COMMUNICATION CHANNELS
             </h3>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {contactMethods.map((method, index) => {
                 const IconComponent = method.icon;
                 return (
@@ -225,7 +225,7 @@ export default function ContactSection() {
 
             {/* Imperial Network Status */}
             <motion.div
-              className="mt-12 bg-imperial-black bg-opacity-50 border border-green-500 rounded-3xl p-6"
+              className="mt-8 sm:mt-12 bg-imperial-black bg-opacity-50 border border-green-500 rounded-3xl p-4 sm:p-6"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: inView ? 1 : 0, scale: inView ? 1 : 0.9 }}
               transition={{ duration: 0.8, delay: 1.2 }}
@@ -264,15 +264,18 @@ export default function ContactSection() {
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             {!submitted ? (
-              <div className="bg-imperial-black bg-opacity-50 border border-imperial-red rounded-3xl p-8 force-field">
-                <div className="flex items-center space-x-3 mb-6">
+              <div className="bg-imperial-black bg-opacity-50 border border-imperial-red rounded-3xl p-4 sm:p-6 lg:p-8 force-field">
+                <div className="flex items-center space-x-3 mb-4 sm:mb-6">
                   <Shield className="w-6 h-6 text-imperial-red" />
                   <h3 className="text-2xl font-orbitron font-bold text-imperial-white">
                     SECURE TRANSMISSION
                   </h3>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4 sm:space-y-6"
+                >
                   {/* Transmission Type */}
                   <div>
                     <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-3">

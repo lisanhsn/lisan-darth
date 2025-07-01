@@ -89,7 +89,7 @@ export default function ProjectsSection() {
     index: number;
   }) => (
     <motion.div
-      className="bg-space-medium bg-opacity-80 border border-imperial-gray rounded-3xl p-6 hover:border-imperial-red transition-all duration-300 group force-field h-full"
+      className="bg-space-medium bg-opacity-80 border border-imperial-gray rounded-3xl p-4 sm:p-6 hover:border-imperial-red transition-all duration-300 group force-field h-full"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -236,13 +236,13 @@ export default function ProjectsSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
           transition={{ duration: 0.8 }}
         >
           <motion.h2
-            className="text-5xl md:text-6xl font-orbitron font-black text-imperial-red mb-6 sith-text"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-red mb-4 sm:mb-6 sith-text"
             initial={{ scale: 0.5 }}
             animate={{ scale: inView ? 1 : 0.5 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -250,7 +250,7 @@ export default function ProjectsSection() {
             IMPERIAL ARCHIVES
           </motion.h2>
           <motion.p
-            className="text-xl text-imperial-gold font-exo max-w-3xl mx-auto mb-8"
+            className="text-base sm:text-lg lg:text-xl text-imperial-gold font-exo max-w-3xl mx-auto mb-6 sm:mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: inView ? 1 : 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -302,11 +302,11 @@ export default function ProjectsSection() {
 
         {/* Projects Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-imperial-black bg-opacity-30 border border-imperial-gray rounded-3xl p-6 animate-pulse"
+                className="bg-imperial-black bg-opacity-30 border border-imperial-gray rounded-3xl p-4 sm:p-6 animate-pulse"
               >
                 <div className="h-6 bg-imperial-gray rounded mb-4"></div>
                 <div className="h-4 bg-imperial-gray rounded mb-2"></div>
@@ -322,7 +322,7 @@ export default function ProjectsSection() {
         ) : (
           <>
             {filteredProjects.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {filteredProjects.map((project, index) => (
                   <ProjectCard
                     key={project.id}
@@ -352,7 +352,7 @@ export default function ProjectsSection() {
             {/* View All Projects */}
             {filteredProjects.length > 0 && (
               <motion.div
-                className="text-center mt-16"
+                className="text-center mt-8 sm:mt-12 lg:mt-16"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 30 }}
                 transition={{ duration: 0.8, delay: 1 }}
@@ -376,12 +376,12 @@ export default function ProjectsSection() {
 
         {/* Imperial Quote */}
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-8 sm:mt-12 lg:mt-16"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 30 }}
           transition={{ duration: 0.8, delay: 1.2 }}
         >
-          <div className="bg-imperial-black bg-opacity-50 border border-imperial-gold rounded-3xl p-6 max-w-2xl mx-auto">
+          <div className="bg-imperial-black bg-opacity-50 border border-imperial-gold rounded-3xl p-4 sm:p-6 max-w-2xl mx-auto">
             <p className="text-lg text-imperial-red font-mono italic sith-text mb-2">
               "Impressive. Most impressive."
             </p>
