@@ -327,6 +327,57 @@ body {
     animation-duration: 240s;
     opacity: 0.2;
   }
+
+  /* Mobile Performance Optimizations */
+  * {
+    -webkit-transform-style: flat;
+    transform-style: flat;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* Disable expensive effects on mobile */
+  .animate-pulse-subtle,
+  .animate-fade-in {
+    animation: none !important;
+  }
+
+  /* Optimize text rendering */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+  }
+
+  /* Reduce blur effects */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  /* Optimize scrolling */
+  .overflow-x-hidden {
+    overscroll-behavior-x: none;
+  }
+
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Optimize touch interactions */
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  /* Better mobile layout */
+  .max-w-7xl {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

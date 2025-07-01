@@ -10,6 +10,7 @@ import DarthVaderHelmet from "@/components/3d/DarthVaderHelmet";
 import SVGDarthVader from "@/components/3d/SVGDarthVader";
 import EnhancedSVGDarthVader from "@/components/3d/EnhancedSVGDarthVader";
 import InteractiveHeroScene from "@/components/3d/InteractiveHeroScene";
+import { useMobile } from "../../hooks/useMobile";
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,6 +18,7 @@ export default function HeroSection() {
   const [isInteracting, setIsInteracting] = useState(false);
   const { ref, inView } = useInView({ threshold: 0.3 });
   const heroRef = useRef<HTMLElement>(null);
+  const isMobile = useMobile();
 
   useEffect(() => {
     setIsVisible(inView);
@@ -63,29 +65,36 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* 3D Canvas Background */}
-      <div className="absolute inset-0 opacity-30">
-        <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
-          <Suspense fallback={null}>
-            <Stars
-              radius={300}
-              depth={60}
-              count={1000}
-              factor={4}
-              saturation={0.1}
-              fade={true}
-            />
-            <Float speed={1} rotationIntensity={0.5} floatIntensity={0.5}>
-              <DarthVaderHelmet position={[4, 2, -5]} scale={0.8} />
-            </Float>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={0.5} />
-          </Suspense>
-        </Canvas>
-      </div>
+      {/* 3D Canvas Background - Simplified on mobile */}
+      {!isMobile && (
+        <div className="absolute inset-0 opacity-30">
+          <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
+            <Suspense fallback={null}>
+              <Stars
+                radius={300}
+                depth={60}
+                count={500}
+                factor={4}
+                saturation={0.1}
+                fade={true}
+              />
+              <Float speed={0.5} rotationIntensity={0.3} floatIntensity={0.3}>
+                <DarthVaderHelmet position={[4, 2, -5]} scale={0.6} />
+              </Float>
+              <ambientLight intensity={0.3} />
+              <pointLight position={[10, 10, 10]} intensity={0.5} />
+            </Suspense>
+          </Canvas>
+        </div>
+      )}
+
+      {/* Mobile-optimized static background */}
+      {isMobile && (
+        <div className="absolute inset-0 bg-gradient-to-br from-space-dark via-red-900/20 to-black opacity-60" />
+      )}
 
       {/* Main Content Grid */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-screen lg:min-h-0">
         {/* Left Column - Content */}
         <div className="space-y-8">
           {/* Imperial Title */}
@@ -104,7 +113,7 @@ export default function HeroSection() {
               </span>
             </motion.div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-orbitron font-black leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-orbitron font-black leading-tight">
               <span className="text-imperial-white">Lord</span>
               <br />
               <span className="bg-gradient-to-r from-imperial-red via-imperial-gold to-imperial-red bg-clip-text text-transparent">
@@ -113,7 +122,7 @@ export default function HeroSection() {
             </h1>
 
             <motion.div
-              className="text-xl md:text-2xl text-imperial-gold mt-6 font-light"
+              className="text-lg sm:text-xl md:text-2xl text-imperial-gold mt-4 sm:mt-6 font-light"
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
@@ -133,7 +142,7 @@ export default function HeroSection() {
             transition={{ duration: 1, delay: 0.6 }}
             className="space-y-6"
           >
-            <p className="text-lg md:text-xl text-imperial-white leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-imperial-white leading-relaxed">
               Self-taught master of the{" "}
               <span className="text-imperial-gold font-bold">
                 Digital Dark Arts
@@ -142,7 +151,7 @@ export default function HeroSection() {
               technologies and frameworks.
             </p>
 
-            <p className="text-lg text-imperial-gold leading-relaxed">
+            <p className="text-base sm:text-lg text-imperial-gold leading-relaxed">
               Full-stack developer wielding React, Next.js, TypeScript, and
               Three.js to create immersive digital experiences that command
               respect across the galaxy.
@@ -161,7 +170,7 @@ export default function HeroSection() {
               y: isVisible ? 0 : 30,
             }}
             transition={{ duration: 1, delay: 0.9 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
           >
             {[
               { icon: Code, label: "Full-Stack" },
@@ -200,7 +209,7 @@ export default function HeroSection() {
             className="flex flex-col sm:flex-row gap-4"
           >
             <motion.button
-              className="relative group px-8 py-4 bg-gradient-to-r from-imperial-red to-red-900 text-imperial-white font-orbitron font-bold rounded-lg border-2 border-imperial-red overflow-hidden"
+              className="relative group px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-imperial-red to-red-900 text-imperial-white font-orbitron font-bold rounded-lg border-2 border-imperial-red overflow-hidden text-sm sm:text-base"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
@@ -223,7 +232,7 @@ export default function HeroSection() {
             </motion.button>
 
             <motion.button
-              className="px-8 py-4 bg-transparent border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-lg hover:bg-imperial-gold hover:text-space-dark transition-colors duration-300"
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-lg hover:bg-imperial-gold hover:text-space-dark transition-colors duration-300 text-sm sm:text-base"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
@@ -239,7 +248,7 @@ export default function HeroSection() {
             </motion.button>
 
             <motion.button
-              className="px-8 py-4 bg-transparent border-2 border-imperial-blue text-imperial-blue font-orbitron font-bold rounded-lg hover:bg-imperial-blue hover:text-imperial-white transition-colors duration-300"
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-blue text-imperial-blue font-orbitron font-bold rounded-lg hover:bg-imperial-blue hover:text-imperial-white transition-colors duration-300 text-sm sm:text-base"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
@@ -279,9 +288,9 @@ export default function HeroSection() {
             style={{ transformStyle: "preserve-3d" }}
           >
             <EnhancedSVGDarthVader
-              mousePosition={mousePosition}
-              isInteracting={isInteracting}
-              className="w-96 h-96 drop-shadow-2xl"
+              mousePosition={isMobile ? { x: 0, y: 0 } : mousePosition}
+              isInteracting={!isMobile && isInteracting}
+              className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 drop-shadow-2xl"
             />
 
             {/* Power Aura */}
@@ -296,9 +305,9 @@ export default function HeroSection() {
             />
           </motion.div>
 
-          {/* Force Lightning Effects */}
+          {/* Force Lightning Effects - Disabled on mobile for performance */}
           <AnimatePresence>
-            {isInteracting && (
+            {!isMobile && isInteracting && (
               <motion.div
                 className="absolute inset-0 pointer-events-none"
                 initial={{ opacity: 0 }}

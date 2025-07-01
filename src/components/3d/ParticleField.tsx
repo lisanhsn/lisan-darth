@@ -4,12 +4,15 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Points, BufferGeometry } from "three";
 import * as THREE from "three";
+import { useMobile } from "../../hooks/useMobile";
 
 export default function ParticleField() {
   const pointsRef = useRef<Points>(null);
+  const isMobile = useMobile();
 
   const { positions, colors } = useMemo(() => {
-    const particleCount = 2000;
+    // Reduce particles significantly on mobile for performance
+    const particleCount = isMobile ? 500 : 2000;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
@@ -42,18 +45,23 @@ export default function ParticleField() {
     }
 
     return { positions, colors };
-  }, []);
+  }, [isMobile]);
 
   useFrame((state) => {
     if (pointsRef.current) {
-      // Slow rotation of the entire particle field
-      pointsRef.current.rotation.y += 0.0005;
-      pointsRef.current.rotation.x += 0.0002;
+      // Reduce animation complexity on mobile
+      const rotationSpeed = isMobile ? 0.0002 : 0.0005;
 
-      // Pulsing effect
-      const time = state.clock.elapsedTime;
-      (pointsRef.current.material as THREE.PointsMaterial).opacity =
-        0.6 + Math.sin(time * 0.5) * 0.2;
+      // Slow rotation of the entire particle field
+      pointsRef.current.rotation.y += rotationSpeed;
+      pointsRef.current.rotation.x += rotationSpeed * 0.4;
+
+      // Simplified pulsing effect on mobile
+      if (!isMobile) {
+        const time = state.clock.elapsedTime;
+        (pointsRef.current.material as THREE.PointsMaterial).opacity =
+          0.6 + Math.sin(time * 0.5) * 0.2;
+      }
     }
   });
 
