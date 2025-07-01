@@ -614,3 +614,356 @@ a:focus-visible {
   animation-fill-mode: both;
   animation-timing-function: ease-out;
 }
+
+/* === GLASSMORPHISM & IMPERIAL HOLOGRAPHIC EFFECTS === */
+
+/* Base Glass Panel System */
+.glass-panel {
+  background: rgba(30, 41, 59, 0.15);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.glass-panel:hover::before {
+  left: 100%;
+}
+
+.glass-panel:hover {
+  background: rgba(30, 41, 59, 0.25);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Imperial Glass Variants */
+.glass-imperial {
+  background: rgba(30, 16, 16, 0.2);
+  backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  box-shadow: 0 8px 32px rgba(220, 38, 38, 0.1),
+    inset 0 1px 0 rgba(248, 113, 113, 0.1);
+}
+
+.glass-imperial:hover {
+  background: rgba(30, 16, 16, 0.3);
+  border-color: rgba(220, 38, 38, 0.4);
+  box-shadow: 0 12px 48px rgba(220, 38, 38, 0.2),
+    0 0 30px rgba(220, 38, 38, 0.15), inset 0 1px 0 rgba(248, 113, 113, 0.2);
+}
+
+.glass-gold {
+  background: rgba(42, 38, 16, 0.2);
+  backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.1),
+    inset 0 1px 0 rgba(252, 211, 77, 0.1);
+}
+
+.glass-gold:hover {
+  background: rgba(42, 38, 16, 0.3);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 12px 48px rgba(245, 158, 11, 0.2),
+    0 0 30px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(252, 211, 77, 0.2);
+}
+
+/* Holographic UI Elements */
+.holo-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(30, 41, 59, 0.1) 50%,
+    rgba(59, 130, 246, 0.05) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.holo-panel::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  animation: holo-rotate 8s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes holo-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Glass Navigation */
+.glass-nav {
+  background: rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-nav.scrolled {
+  background: rgba(2, 6, 23, 0.95);
+  backdrop-filter: blur(24px) saturate(200%);
+  border-bottom-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Animated Glass Cards */
+.glass-card {
+  background: rgba(30, 41, 59, 0.12);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.6),
+    transparent
+  );
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.glass-card:hover::before {
+  transform: scaleX(1);
+}
+
+.glass-card:hover {
+  background: rgba(30, 41, 59, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(59, 130, 246, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Floating Glass Elements */
+.glass-float {
+  animation: glass-float 6s ease-in-out infinite;
+}
+
+@keyframes glass-float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    filter: blur(0px);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+    filter: blur(0.5px);
+  }
+}
+
+/* Glass Buttons */
+.glass-btn {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.glass-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.glass-btn:hover::before {
+  left: 100%;
+}
+
+.glass-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Imperial Glass Sections */
+.glass-section {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.08) 0%,
+    rgba(15, 23, 42, 0.12) 50%,
+    rgba(30, 41, 59, 0.08) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(148, 163, 184, 0.05);
+  position: relative;
+}
+
+.glass-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(59, 130, 246, 0.03) 50%,
+    transparent 70%
+  );
+  animation: glass-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes glass-shimmer {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Holographic Text Effects */
+.holo-text {
+  background: linear-gradient(
+    45deg,
+    #60a5fa,
+    #3b82f6,
+    #1e40af,
+    #3b82f6,
+    #60a5fa
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: holo-text-flow 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+}
+
+@keyframes holo-text-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Glass Overlay Effects */
+.glass-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.05) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(245, 158, 11, 0.05) 100%
+  );
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  animation: glass-overlay-shift 12s ease-in-out infinite;
+}
+
+@keyframes glass-overlay-shift {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  33% {
+    opacity: 0.8;
+  }
+  66% {
+    opacity: 0.3;
+  }
+}
+
+/* Mobile Glass Optimizations */
+@media (max-width: 768px) {
+  .glass-panel,
+  .glass-card,
+  .glass-section {
+    backdrop-filter: blur(8px) saturate(150%);
+  }
+
+  .glass-panel::before,
+  .glass-card::before,
+  .glass-btn::before {
+    display: none; /* Disable sweep animations on mobile */
+  }
+
+  .holo-panel::after {
+    animation-duration: 12s; /* Slower animations on mobile */
+  }
+
+  .glass-float {
+    animation-duration: 8s;
+  }
+}
+
+/* High Performance Glass */
+.glass-gpu {
+  will-change: transform, opacity, backdrop-filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

@@ -79,10 +79,8 @@ export default function Navigation() {
     <>
       {/* Main Navigation */}
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-space-black bg-opacity-95 backdrop-blur-md border-b border-imperial-gray"
-            : "bg-transparent"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-nav glass-gpu ${
+          isScrolled ? "scrolled" : ""
         }`}
         initial={{ y: isMobile ? 0 : -100 }}
         animate={{ y: 0 }}
@@ -93,14 +91,14 @@ export default function Navigation() {
           <div className="flex items-center justify-between h-16">
             {/* Imperial Logo */}
             <motion.div
-              className="flex items-center space-x-3"
+              className="flex items-center space-x-3 glass-panel glass-imperial px-3 py-2 rounded-2xl"
               whileHover={isMobile ? {} : { scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               style={{ willChange: "transform" }}
             >
               <div className="w-10 h-10 relative">
                 <motion.div
-                  className="w-full h-full border-2 border-imperial-red rounded-full bg-imperial-black"
+                  className="w-full h-full border-2 border-imperial-red rounded-full bg-imperial-black glass-float"
                   animate={isMobile ? {} : { rotate: 360 }}
                   transition={
                     isMobile
@@ -119,7 +117,7 @@ export default function Navigation() {
                 </motion.div>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-2xl font-orbitron font-black text-imperial-red sith-text heading-imperial">
+                <h1 className="text-2xl font-orbitron font-black text-imperial-red sith-text heading-imperial holo-text">
                   DARTH LISAN
                 </h1>
                 <p className="text-xs text-imperial-gold font-exo">
@@ -138,9 +136,9 @@ export default function Navigation() {
                   <motion.button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`relative px-4 py-2 rounded-2xl font-orbitron text-sm font-medium transition-all duration-300 group ${
+                    className={`relative px-4 py-2 rounded-2xl font-orbitron text-sm font-medium transition-all duration-300 group glass-btn ${
                       isActive
-                        ? "text-imperial-gold bg-imperial-red bg-opacity-20 border border-imperial-red"
+                        ? "text-imperial-gold glass-gold border-imperial-red"
                         : "text-imperial-white hover:text-imperial-gold"
                     }`}
                     whileHover={isMobile ? {} : { scale: 1.02 }}
@@ -154,7 +152,7 @@ export default function Navigation() {
 
                     {/* Hover Quote */}
                     <motion.div
-                      className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-imperial-black border border-imperial-red rounded-2xl text-xs text-imperial-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap"
+                      className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 glass-panel glass-imperial rounded-2xl text-xs text-imperial-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap holo-panel"
                       initial={{ opacity: 0, y: 10 }}
                       whileHover={{ opacity: 1, y: 0 }}
                     >
@@ -176,7 +174,7 @@ export default function Navigation() {
 
             {/* Mobile Menu Button */}
             <motion.button
-              className="md:hidden p-2 text-text-secondary hover:text-imperial-red transition-colors btn-accessible"
+              className="md:hidden p-2 text-text-secondary hover:text-imperial-red transition-colors btn-accessible glass-btn"
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(!isOpen)}
             >
@@ -198,22 +196,10 @@ export default function Navigation() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "tween", duration: 0.3 }}
-            className={`md:hidden fixed top-16 left-0 right-0 z-40 transition-all duration-300 ${
-              isOpen
-                ? "bg-space-black bg-opacity-95 backdrop-blur-md border-b border-imperial-gray"
-                : "bg-transparent pointer-events-none"
-            }`}
+            className="fixed top-16 right-0 bottom-0 w-80 glass-section glass-imperial z-40 overflow-hidden"
           >
-            <div className="flex flex-col p-6 space-y-6">
-              <div className="text-center border-b border-imperial-red pb-6">
-                <h2 className="text-2xl font-orbitron font-bold text-imperial-red sith-text">
-                  IMPERIAL MENU
-                </h2>
-                <p className="text-imperial-gold text-sm mt-2">
-                  Choose your destination
-                </p>
-              </div>
-
+            <div className="glass-overlay" />
+            <div className="relative z-10 p-6 space-y-4">
               {navigationItems.map((item, index) => {
                 const IconComponent = item.icon;
                 const isActive = activeSection === item.id;
@@ -222,10 +208,10 @@ export default function Navigation() {
                   <motion.button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`w-full p-4 rounded-3xl border text-left transition-all duration-300 group ${
+                    className={`w-full text-left p-4 rounded-2xl font-orbitron font-medium transition-all duration-300 glass-card ${
                       isActive
-                        ? "bg-imperial-red bg-opacity-20 border-imperial-red text-imperial-gold"
-                        : "border-imperial-gray hover:border-imperial-red text-imperial-white hover:text-imperial-gold"
+                        ? "text-imperial-gold glass-gold border-imperial-red"
+                        : "text-imperial-white hover:text-imperial-gold"
                     }`}
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -233,56 +219,18 @@ export default function Navigation() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex items-center space-x-3 mb-2">
+                    <div className="flex items-center space-x-3">
                       <IconComponent size={20} />
-                      <span className="font-orbitron font-medium">
-                        {item.label}
-                      </span>
+                      <div>
+                        <div className="text-lg">{item.label}</div>
+                        <div className="text-xs text-imperial-gold opacity-70">
+                          {item.quote}
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-xs text-imperial-gold opacity-80 group-hover:opacity-100">
-                      {item.quote}
-                    </p>
-
-                    {isActive && (
-                      <motion.div
-                        className="absolute left-0 top-0 bottom-0 w-1 bg-imperial-red lightsaber-glow"
-                        layoutId="mobileActiveIndicator"
-                      />
-                    )}
                   </motion.button>
                 );
               })}
-
-              {/* Imperial Quote */}
-              <motion.div
-                className="mt-8 p-4 border border-imperial-red rounded-3xl bg-imperial-red bg-opacity-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                <p className="text-imperial-gold text-sm italic text-center">
-                  "The Force is strong with this developer"
-                </p>
-                <p className="text-imperial-red text-xs text-center mt-2 font-orbitron">
-                  - DARTH VADER
-                </p>
-              </motion.div>
-
-              {/* Hidden Admin Access */}
-              <motion.div
-                className="mt-4 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                <button
-                  onClick={() => (window.location.href = "/admin")}
-                  className="text-xs text-imperial-gray hover:text-imperial-red transition-colors opacity-50 hover:opacity-100"
-                  title="Imperial Command Center"
-                >
-                  ⚡ Command Access ⚡
-                </button>
-              </motion.div>
             </div>
           </motion.div>
         )}

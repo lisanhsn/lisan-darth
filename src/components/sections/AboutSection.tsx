@@ -20,13 +20,15 @@ export default function AboutSection() {
     <section
       ref={ref}
       id="about"
-      className="relative min-h-screen py-10 sm:py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black glass-section"
       style={{
         willChange: "transform",
         transform: "translateZ(0)",
         backfaceVisibility: "hidden",
       }}
     >
+      {/* Glass Overlay */}
+      <div className="glass-overlay" />
       {/* Imperial Atmosphere Effects - Optimized for mobile */}
       {!isMobile && (
         <div
@@ -133,7 +135,7 @@ export default function AboutSection() {
           >
             {/* Section Badge */}
             <motion.div
-              className="inline-flex items-center space-x-3 bg-tatooine-sunset px-6 py-3 rounded-full backdrop-blur-sm border border-tatooine-orange"
+              className="inline-flex items-center space-x-3 glass-panel glass-gold px-6 py-3 rounded-full holo-panel"
               initial={{ scale: isMobile ? 1 : 0.8, opacity: 0 }}
               animate={{
                 scale: 1,
@@ -153,14 +155,14 @@ export default function AboutSection() {
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
-              <span className="text-hoth-white font-orbitron font-bold text-sm tracking-wider">
+              <span className="text-hoth-white font-orbitron font-bold text-sm tracking-wider holo-text">
                 ORIGIN STORY
               </span>
             </motion.div>
 
             {/* Main Heading */}
             <motion.h2
-              className="text-5xl md:text-6xl lg:text-7xl font-orbitron font-black leading-tight"
+              className="text-5xl md:text-6xl lg:text-7xl font-orbitron font-black leading-tight glass-card p-6 rounded-3xl"
               initial={{ opacity: 0, y: isMobile ? 0 : 50 }}
               animate={{
                 opacity: 1,
@@ -172,16 +174,16 @@ export default function AboutSection() {
               }}
               style={{ willChange: "transform, opacity" }}
             >
-              <span className="hologram-blue">FROM THE</span>
+              <span className="hologram-blue holo-text">FROM THE</span>
               <br />
               <span className="text-tatooine-sand">OUTER RIM</span>
               <br />
-              <span className="text-empire-gold">TO THE CORE</span>
+              <span className="text-empire-gold holo-text">TO THE CORE</span>
             </motion.h2>
 
             {/* Story Content */}
             <motion.div
-              className="space-y-6"
+              className="space-y-6 glass-panel glass-imperial p-6 rounded-2xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{
                 opacity: isVisible ? 1 : 0,
@@ -192,7 +194,7 @@ export default function AboutSection() {
               <p className="text-xl text-hoth-white/90 leading-relaxed">
                 Like many great adventures, my journey began on the dusty plains
                 of
-                <span className="text-tatooine-orange font-semibold">
+                <span className="text-tatooine-orange font-semibold holo-text">
                   {" "}
                   Tatooine
                 </span>

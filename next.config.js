@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV === "development";
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -11,11 +13,15 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // GitHub Pages static export configuration
-  output: "export",
-  trailingSlash: true,
-  basePath: "/lisan-darth",
-  assetPrefix: "/lisan-darth",
+  // GitHub Pages static export configuration (production only)
+  ...(isDev
+    ? {}
+    : {
+        output: "export",
+        trailingSlash: true,
+        basePath: "/lisan-darth",
+        assetPrefix: "/lisan-darth",
+      }),
 
   experimental: {
     optimizePackageImports: [
@@ -29,21 +35,25 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
 
-  // Security headers
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "X-DNS-Prefetch-Control", value: "on" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "origin-when-cross-origin" },
-        ],
-      },
-    ];
-  },
+  // Security headers (production only to avoid dev warnings)
+  ...(!isDev
+    ? {
+        async headers() {
+          return [
+            {
+              source: "/:path*",
+              headers: [
+                { key: "X-DNS-Prefetch-Control", value: "on" },
+                { key: "X-XSS-Protection", value: "1; mode=block" },
+                { key: "X-Frame-Options", value: "DENY" },
+                { key: "X-Content-Type-Options", value: "nosniff" },
+                { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+              ],
+            },
+          ];
+        },
+      }
+    : {}),
 
   images: {
     unoptimized: true,
@@ -100,19 +110,23 @@ const nextConfig = {
     return config;
   },
 
-  // PWA and offline support
-  async rewrites() {
-    return [
-      {
-        source: "/sitemap.xml",
-        destination: "/api/sitemap",
-      },
-      {
-        source: "/robots.txt",
-        destination: "/api/robots",
-      },
-    ];
-  },
+  // PWA and offline support (production only to avoid dev warnings)
+  ...(!isDev
+    ? {
+        async rewrites() {
+          return [
+            {
+              source: "/sitemap.xml",
+              destination: "/api/sitemap",
+            },
+            {
+              source: "/robots.txt",
+              destination: "/api/robots",
+            },
+          ];
+        },
+      }
+    : {}),
 };
 
 module.exports = nextConfig;

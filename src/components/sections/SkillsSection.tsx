@@ -133,13 +133,15 @@ export default function SkillsSection() {
     <section
       ref={ref}
       id="skills"
-      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-sith-gradient overflow-hidden"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-sith-gradient overflow-hidden glass-section"
       style={{
         willChange: "transform",
         transform: "translateZ(0)",
         backfaceVisibility: "hidden",
       }}
     >
+      {/* Glass Overlay */}
+      <div className="glass-overlay" />
       {/* 3D Background - Desktop only */}
       {!isMobile && <SkillsBackground3D />}
 
@@ -161,7 +163,7 @@ export default function SkillsSection() {
           style={{ willChange: "transform, opacity" }}
         >
           <motion.h2
-            className="text-5xl md:text-6xl font-orbitron font-black text-imperial-red mb-6"
+            className="text-5xl md:text-6xl font-orbitron font-black text-imperial-red mb-6 holo-text"
             initial={{ scale: isMobile ? 1 : 0.5 }}
             animate={{ scale: 1 }}
             transition={{
@@ -234,9 +236,9 @@ export default function SkillsSection() {
                     onClick={() =>
                       setActiveCategory(key as keyof typeof skillCategories)
                     }
-                    className={`w-full p-4 rounded-3xl border text-left transition-all duration-300 group ${
+                    className={`w-full p-4 rounded-3xl border text-left transition-all duration-300 group glass-card ${
                       isActive
-                        ? "border-imperial-red bg-imperial-red bg-opacity-20"
+                        ? "glass-imperial border-imperial-red"
                         : "border-imperial-gray hover:border-imperial-gold"
                     }`}
                     initial={{ opacity: 0, x: -30 }}
@@ -292,7 +294,7 @@ export default function SkillsSection() {
           >
             <motion.div
               key={activeCategory}
-              className="bg-space-dark/80 border border-imperial-red rounded-3xl p-8"
+              className="glass-panel glass-imperial rounded-3xl p-8 holo-panel"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
@@ -315,7 +317,7 @@ export default function SkillsSection() {
                 {currentCategory.skills.map((skill, index) => (
                   <motion.div
                     key={skill.name}
-                    className="bg-space-dark/60 border border-imperial-gray rounded-3xl p-4 hover:border-imperial-gold transition-all duration-300"
+                    className="glass-card border border-imperial-gray rounded-3xl p-4 hover:border-imperial-gold transition-all duration-300"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -357,14 +359,14 @@ export default function SkillsSection() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <div className="bg-imperial-red bg-opacity-20 border border-imperial-red rounded-3xl p-3">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red">
+                <div className="glass-panel glass-imperial rounded-3xl p-3">
+                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
                     {currentCategory.skills.length}
                   </div>
                   <div className="text-xs text-imperial-gold">SKILLS</div>
                 </div>
-                <div className="bg-imperial-red bg-opacity-20 border border-imperial-red rounded-3xl p-3">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red">
+                <div className="glass-panel glass-imperial rounded-3xl p-3">
+                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
                     {Math.round(
                       currentCategory.skills.reduce(
                         (acc, skill) => acc + skill.level,
@@ -375,8 +377,8 @@ export default function SkillsSection() {
                   </div>
                   <div className="text-xs text-imperial-gold">MASTERY</div>
                 </div>
-                <div className="bg-imperial-red bg-opacity-20 border border-imperial-red rounded-3xl p-3">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red">
+                <div className="glass-panel glass-imperial rounded-3xl p-3">
+                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
                     {Math.max(...currentCategory.skills.map((s) => s.level))}%
                   </div>
                   <div className="text-xs text-imperial-gold">PEAK</div>
@@ -393,8 +395,8 @@ export default function SkillsSection() {
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 30 }}
           transition={{ duration: 0.8, delay: 1.2 }}
         >
-          <div className="bg-space-dark/80 border border-imperial-gold rounded-3xl p-6 max-w-2xl mx-auto">
-            <p className="text-lg text-imperial-red font-mono italic mb-2">
+          <div className="glass-panel glass-gold rounded-3xl p-6 max-w-2xl mx-auto holo-panel">
+            <p className="text-lg text-imperial-red font-mono italic mb-2 holo-text">
               "Your skills are impressive... most impressive."
             </p>
             <p className="text-imperial-gold text-sm font-orbitron">

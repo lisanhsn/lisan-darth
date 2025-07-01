@@ -36,7 +36,7 @@ export default function HeroSection() {
     <section
       ref={ref}
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black pt-24 pb-16"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black pt-24 pb-16 glass-section"
       onMouseMove={isMobile ? undefined : handleMouseMove}
       style={{
         willChange: "transform",
@@ -45,6 +45,9 @@ export default function HeroSection() {
         perspective: "1000px",
       }}
     >
+      {/* Glass Overlay */}
+      <div className="glass-overlay" />
+
       {/* Optimized Star Field with Death Star */}
       <div className="absolute inset-0" style={{ willChange: "transform" }}>
         {!isMobile ? (
@@ -63,7 +66,7 @@ export default function HeroSection() {
 
         {/* Optimized Death Star */}
         <div
-          className="absolute top-10 right-10 w-20 sm:w-32 h-20 sm:h-32 rounded-full bg-gradient-to-br from-imperial-gray to-space-dark opacity-20 shadow-2xl"
+          className="absolute top-10 right-10 w-20 sm:w-32 h-20 sm:h-32 rounded-full bg-gradient-to-br from-imperial-gray to-space-dark opacity-20 shadow-2xl glass-panel glass-float"
           style={{
             willChange: "transform",
             animation: "spin 120s linear infinite",
@@ -115,7 +118,7 @@ export default function HeroSection() {
         >
           {/* Lightweight CSS-only spaceships for mobile */}
           <div
-            className="absolute top-1/3 w-4 h-2 bg-imperial-red rounded-full"
+            className="absolute top-1/3 w-4 h-2 bg-imperial-red rounded-full glass-float"
             style={{
               willChange: "transform",
               animation: "flyAcross 6s ease-in-out infinite",
@@ -132,7 +135,7 @@ export default function HeroSection() {
           </div>
 
           <div
-            className="absolute top-2/3 w-3 h-1.5 bg-energy-blue rounded-full"
+            className="absolute top-2/3 w-3 h-1.5 bg-energy-blue rounded-full glass-float"
             style={{
               willChange: "transform",
               animation: "flyAcross 8s ease-in-out infinite",
@@ -169,11 +172,12 @@ export default function HeroSection() {
               delay: isMobile ? 0 : 0.1,
               ease: "easeOut",
             }}
+            className="glass-panel glass-imperial p-6 rounded-3xl"
             style={{ willChange: "transform, opacity" }}
           >
             <motion.div className="flex items-center space-x-3 mb-6">
               <Crown className="w-8 h-8 text-imperial-gold" />
-              <span className="text-imperial-gold font-orbitron font-bold text-lg tracking-wide">
+              <span className="text-imperial-gold font-orbitron font-bold text-lg tracking-wide holo-text">
                 SITH LORD OF CODE
               </span>
             </motion.div>
@@ -181,7 +185,7 @@ export default function HeroSection() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-orbitron font-black leading-tight">
               <span className="text-imperial-white">Lord</span>
               <br />
-              <span className="bg-gradient-to-r from-imperial-red via-imperial-gold to-imperial-red bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-imperial-red via-imperial-gold to-imperial-red bg-clip-text text-transparent holo-text">
                 Darth Lisan
               </span>
             </h1>
@@ -199,277 +203,183 @@ export default function HeroSection() {
 
           {/* Power Description */}
           <motion.div
-            initial={{ opacity: 0, x: isMobile ? 0 : -50 }}
+            initial={{ opacity: 0, x: isMobile ? 0 : -100 }}
             animate={{
               opacity: 1,
               x: 0,
             }}
             transition={{
-              duration: isMobile ? 0.3 : 0.6,
-              delay: isMobile ? 0.1 : 0.2,
+              duration: isMobile ? 0.3 : 0.8,
+              delay: isMobile ? 0 : 0.3,
               ease: "easeOut",
             }}
-            className="space-y-4 sm:space-y-6"
+            className="glass-card p-6 space-y-4"
             style={{ willChange: "transform, opacity" }}
           >
-            <p className="text-base sm:text-lg md:text-xl text-imperial-white leading-relaxed">
-              Self-taught master of the{" "}
-              <span className="text-imperial-gold font-bold">
-                Digital Dark Arts
+            <div className="flex items-center space-x-4">
+              <div className="flex space-x-2">
+                <Code className="w-6 h-6 text-energy-blue" />
+                <Zap className="w-6 h-6 text-imperial-gold" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-orbitron font-bold text-imperial-white">
+                Master of the Dark Side Development
+              </h2>
+            </div>
+
+            <p className="text-base sm:text-lg text-text-secondary leading-relaxed">
+              Wielding the power of{" "}
+              <span className="text-energy-blue font-semibold holo-text">
+                React
               </span>
-              . I forge powerful web applications using the Force of modern
-              technologies and frameworks.
+              ,{" "}
+              <span className="text-imperial-gold font-semibold">Next.js</span>,
+              and{" "}
+              <span className="text-imperial-red font-semibold">
+                TypeScript
+              </span>{" "}
+              to build applications that would make even the Emperor proud.
             </p>
 
-            <p className="text-base sm:text-lg text-imperial-gold leading-relaxed">
-              Full-stack developer wielding React, Next.js, TypeScript, and
-              Three.js to create immersive digital experiences that command
-              respect across the galaxy.
-            </p>
-
-            <p className="text-imperial-blue font-medium">
-              "Join the dark side. We have better code architecture."
-            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              {["React", "Next.js", "TypeScript", "Node.js", "AWS"].map(
+                (tech) => (
+                  <span
+                    key={tech}
+                    className="px-3 py-1 text-sm font-medium bg-gradient-to-r from-energy-blue/20 to-imperial-gold/20 border border-energy-blue/30 rounded-full text-energy-blue glass-btn"
+                  >
+                    {tech}
+                  </span>
+                )
+              )}
+            </div>
           </motion.div>
 
-          {/* Skills Highlights */}
+          {/* Action Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: isMobile ? 0 : 20 }}
+            initial={{ opacity: 0, y: isMobile ? 0 : 50 }}
             animate={{
               opacity: 1,
               y: 0,
             }}
             transition={{
-              duration: isMobile ? 0.3 : 0.6,
-              delay: isMobile ? 0.2 : 0.3,
-              ease: "easeOut",
-            }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
-            style={{ willChange: "transform, opacity" }}
-          >
-            {[
-              { icon: Code, label: "Full-Stack" },
-              { icon: Zap, label: "Performance" },
-              { icon: Crown, label: "3D Graphics" },
-            ].map((skill, index) => {
-              const Icon = skill.icon;
-              return (
-                <motion.div
-                  key={skill.label}
-                  className="bg-space-dark/50 backdrop-blur-sm border border-imperial-gray rounded-lg p-4 text-center transition-all duration-200"
-                  whileHover={
-                    isMobile
-                      ? {}
-                      : {
-                          scale: 1.02,
-                          borderColor: "rgb(220, 38, 38)",
-                        }
-                  }
-                  transition={{ type: "tween", duration: 0.2 }}
-                  style={{ willChange: "transform" }}
-                >
-                  <Icon className="w-8 h-8 text-imperial-gold mx-auto mb-2" />
-                  <div className="text-sm font-orbitron font-bold text-imperial-white">
-                    {skill.label}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-
-          {/* Imperial CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: isMobile ? 0 : 20 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: isMobile ? 0.3 : 0.6,
-              delay: isMobile ? 0.3 : 0.4,
+              duration: isMobile ? 0.3 : 0.8,
+              delay: isMobile ? 0 : 0.5,
               ease: "easeOut",
             }}
             className="flex flex-col sm:flex-row gap-4"
             style={{ willChange: "transform, opacity" }}
           >
             <motion.button
-              className="relative group px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-imperial-red to-red-900 text-imperial-white font-orbitron font-bold rounded-lg border-2 border-imperial-red overflow-hidden text-sm sm:text-base transition-transform duration-200"
+              className="group px-8 py-4 bg-gradient-to-r from-imperial-red to-imperial-red/80 text-imperial-white font-orbitron font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-imperial-red/20 glass-btn glass-imperial flex items-center justify-center space-x-3"
               whileHover={isMobile ? {} : { scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              transition={{ type: "tween", duration: 0.2 }}
-              onClick={() => {
-                document
-                  .getElementById("projects")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-              style={{ willChange: "transform" }}
-            >
-              <span className="relative z-10 flex items-center space-x-2">
-                <Crown className="w-5 h-5" />
-                <span>View My Empire</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-red-600 to-imperial-red"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "0%" }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.button>
-
-            <motion.button
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-lg hover:bg-imperial-gold hover:text-space-dark transition-all duration-200 text-sm sm:text-base"
-              whileHover={isMobile ? {} : { scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "tween", duration: 0.2 }}
-              onClick={() => {
-                document
-                  .getElementById("skills")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-              style={{ willChange: "transform" }}
-            >
-              <span className="flex items-center space-x-2">
-                <Zap className="w-5 h-5" />
-                <span>My Powers</span>
-              </span>
-            </motion.button>
-
-            <motion.button
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-blue text-imperial-blue font-orbitron font-bold rounded-lg hover:bg-imperial-blue hover:text-imperial-white transition-all duration-200 text-sm sm:text-base"
-              whileHover={isMobile ? {} : { scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "tween", duration: 0.2 }}
-              onClick={() => {
+              onClick={() =>
                 document
                   .getElementById("contact")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-              style={{ willChange: "transform" }}
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
             >
-              <span className="flex items-center space-x-2">
-                <Mail className="w-5 h-5" />
-                <span>Request Audience</span>
-              </span>
+              <Mail className="w-5 h-5" />
+              <span>Join the Dark Side</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+
+            <motion.button
+              className="group px-8 py-4 border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-2xl transition-all duration-300 hover:bg-imperial-gold hover:text-space-dark glass-btn glass-gold flex items-center justify-center space-x-3"
+              whileHover={isMobile ? {} : { scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Download className="w-5 h-5" />
+              <span>Download Resume</span>
             </motion.button>
           </motion.div>
         </div>
 
-        {/* Right Column - Optimized for Mobile */}
+        {/* Right Column - 3D Darth Vader */}
         <motion.div
-          className="relative flex justify-center items-center"
-          initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
+          className="relative h-96 lg:h-[600px] flex items-center justify-center"
+          initial={{ opacity: 0, scale: isMobile ? 1 : 0.8 }}
           animate={{
             opacity: 1,
-            x: 0,
+            scale: 1,
           }}
           transition={{
-            duration: isMobile ? 0.4 : 0.8,
-            delay: isMobile ? 0.4 : 0.5,
+            duration: isMobile ? 0.3 : 1,
+            delay: isMobile ? 0 : 0.7,
             ease: "easeOut",
           }}
-          onMouseEnter={isMobile ? undefined : () => setIsInteracting(true)}
-          onMouseLeave={isMobile ? undefined : () => setIsInteracting(false)}
           style={{ willChange: "transform, opacity" }}
         >
-          {/* Optimized SVG Darth Vader */}
-          <motion.div
-            className="relative z-10"
-            animate={
-              isMobile
-                ? {}
-                : {
-                    rotateY: mousePosition.x * 5,
-                    rotateX: -mousePosition.y * 3,
-                  }
-            }
-            transition={{ type: "tween", duration: 0.3 }}
-            style={{
-              transformStyle: isMobile ? "flat" : "preserve-3d",
-              willChange: "transform",
-            }}
-          >
-            <EnhancedSVGDarthVader
-              mousePosition={isMobile ? { x: 0, y: 0 } : mousePosition}
-              isInteracting={!isMobile && isInteracting}
-              className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 drop-shadow-2xl"
-            />
+          {/* Glass Panel Background */}
+          <div className="absolute inset-0 glass-panel glass-imperial rounded-3xl opacity-30" />
 
-            {/* Optimized Power Aura */}
-            {!isMobile && (
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                animate={{
-                  boxShadow: isInteracting
-                    ? "0 0 80px rgba(220, 38, 38, 0.4), 0 0 120px rgba(220, 38, 38, 0.2)"
-                    : "0 0 40px rgba(220, 38, 38, 0.2), 0 0 80px rgba(220, 38, 38, 0.1)",
-                }}
-                transition={{ duration: 0.3 }}
-                style={{ willChange: "box-shadow" }}
-              />
-            )}
-          </motion.div>
-
-          {/* Force Lightning Effects - Disabled on mobile for performance */}
-          <AnimatePresence>
-            {!isMobile && isInteracting && (
-              <motion.div
-                className="absolute inset-0 pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-1 bg-gradient-to-t from-imperial-blue to-white rounded-full"
-                    style={{
-                      left: `${20 + i * 15}%`,
-                      top: `${10 + i * 10}%`,
-                      height: `${50 + Math.random() * 100}px`,
-                    }}
-                    animate={{
-                      opacity: [0, 1, 0],
-                      scale: [0.5, 1, 0.5],
-                    }}
-                    transition={{
-                      duration: 0.5,
-                      repeat: Infinity,
-                      delay: i * 0.1,
-                    }}
+          {!isMobile ? (
+            <div className="w-full h-full relative">
+              <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+                <Suspense fallback={null}>
+                  <ambientLight intensity={0.4} />
+                  <pointLight position={[10, 10, 10]} intensity={0.8} />
+                  <pointLight
+                    position={[-10, -10, 5]}
+                    intensity={0.4}
+                    color="#ff6b35"
                   />
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+
+                  {/* Conditional 3D content based on device */}
+                  <Float speed={1} rotationIntensity={0.5} floatIntensity={0.5}>
+                    <DarthVaderHelmet position={[0, 0, 0]} scale={1.5} />
+                  </Float>
+
+                  <OrbitControls
+                    enableZoom={false}
+                    enablePan={false}
+                    autoRotate
+                    autoRotateSpeed={0.5}
+                    onStart={() => setIsInteracting(true)}
+                    onEnd={() => setIsInteracting(false)}
+                  />
+                </Suspense>
+              </Canvas>
+
+              {/* Interactive UI Overlay */}
+              <div className="absolute bottom-4 left-4 right-4 text-center glass-panel glass-imperial p-3 rounded-2xl">
+                <p className="text-imperial-gold text-sm font-orbitron">
+                  Click and drag to feel the Force
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <EnhancedSVGDarthVader className="w-64 h-64 sm:w-80 sm:h-80" />
+            </div>
+          )}
         </motion.div>
       </div>
 
-      {/* Scroll Indicator - Hidden on mobile for cleaner UX */}
-      {!isMobile && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          style={{ willChange: "transform, opacity" }}
-        >
-          <motion.div
-            className="flex flex-col items-center space-y-2 text-imperial-gold"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            onClick={() => {
-              document
-                .getElementById("about")
-                ?.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            <span className="text-xs font-orbitron font-medium cursor-pointer">
-              EXPLORE THE EMPIRE
-            </span>
-            <div className="w-0.5 h-6 bg-gradient-to-b from-imperial-red to-transparent" />
-          </motion.div>
-        </motion.div>
+      {/* Force Lightning Effects (Desktop Only) */}
+      {!isMobile && isInteracting && (
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-px bg-gradient-to-b from-energy-blue to-transparent"
+              style={{
+                left: `${20 + i * 30}%`,
+                height: "100%",
+                filter: "blur(1px)",
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scaleY: [0, 1, 0],
+              }}
+              transition={{
+                duration: 0.5,
+                repeat: Infinity,
+                delay: i * 0.2,
+              }}
+            />
+          ))}
+        </div>
       )}
     </section>
   );
