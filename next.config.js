@@ -14,6 +14,8 @@ const nextConfig = {
   // GitHub Pages static export configuration
   output: "export",
   trailingSlash: true,
+  basePath: "/lisan-darth",
+  assetPrefix: "/lisan-darth",
 
   experimental: {
     optimizePackageImports: [
