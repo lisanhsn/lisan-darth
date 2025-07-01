@@ -87,7 +87,7 @@ function FloatingTechIcon({
         {/* Glow Effect */}
         <mesh position={[0, 0, 0]} scale={1.3}>
           <boxGeometry args={[1, 1, 0.1]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             color={color}
             transparent
             opacity={0.1}
@@ -244,7 +244,7 @@ function EnhancedDarthVaderHelmet({
       {/* Dramatic Red Aura */}
       <mesh position={[0, 0, 0]} scale={1.8}>
         <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#dc2626"
           transparent
           opacity={0.05}

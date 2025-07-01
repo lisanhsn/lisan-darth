@@ -52,7 +52,8 @@ export default function ParticleField() {
 
       // Pulsing effect
       const time = state.clock.elapsedTime;
-      pointsRef.current.material.opacity = 0.6 + Math.sin(time * 0.5) * 0.2;
+      (pointsRef.current.material as THREE.PointsMaterial).opacity =
+        0.6 + Math.sin(time * 0.5) * 0.2;
     }
   });
 

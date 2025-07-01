@@ -58,7 +58,7 @@ export default function DarthVaderHelmet({
       <group ref={eyesRef}>
         <mesh position={[-0.25, 0.1, 0.9]}>
           <sphereGeometry args={[0.1, 16, 16]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             color="#FF0000"
             emissive="#FF0000"
             emissiveIntensity={0.8}
@@ -66,7 +66,7 @@ export default function DarthVaderHelmet({
         </mesh>
         <mesh position={[0.25, 0.1, 0.9]}>
           <sphereGeometry args={[0.1, 16, 16]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             color="#FF0000"
             emissive="#FF0000"
             emissiveIntensity={0.8}
@@ -93,7 +93,7 @@ export default function DarthVaderHelmet({
       {/* Imperial Symbol */}
       <mesh position={[0, 0.2, 0.95]} rotation={[0, 0, 0]}>
         <circleGeometry args={[0.15, 16]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#FFD700"
           emissive="#FFD700"
           emissiveIntensity={0.3}
@@ -103,7 +103,7 @@ export default function DarthVaderHelmet({
       {/* Glowing Aura */}
       <mesh position={[0, 0, 0]} scale={1.3}>
         <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color="#FF0000"
           transparent
           opacity={0.05}
