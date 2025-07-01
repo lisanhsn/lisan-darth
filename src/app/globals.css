@@ -1,0 +1,376 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700;800;900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* === PROFESSIONAL DARK PALETTE === */
+  --primary-blue: #3b82f6;
+  --primary-blue-light: #60a5fa;
+  --primary-blue-dark: #1e40af;
+
+  --accent-gold: #f59e0b;
+  --accent-gold-light: #fcd34d;
+  --accent-gold-dark: #d97706;
+
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --neutral-950: #020617;
+
+  /* === SEMANTIC COLORS === */
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-accent: #3b82f6;
+
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+  --bg-card: rgba(30, 41, 59, 0.5);
+  --bg-card-hover: rgba(30, 41, 59, 0.8);
+
+  --border-primary: rgba(148, 163, 184, 0.1);
+  --border-secondary: rgba(148, 163, 184, 0.2);
+  --border-accent: rgba(59, 130, 246, 0.3);
+
+  /* === SUBTLE STAR WARS ACCENTS === */
+  --imperial-accent: #1e40af;
+  --rebel-accent: #f59e0b;
+  --jedi-accent: #3b82f6;
+  --force-glow: rgba(59, 130, 246, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background: linear-gradient(
+    180deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-primary) 100%
+  );
+  color: var(--text-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* === SUBTLE STAR FIELD === */
+.star-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      1px 1px at 20px 30px,
+      rgba(248, 250, 252, 0.3),
+      transparent
+    ),
+    radial-gradient(1px 1px at 40px 70px, rgba(59, 130, 246, 0.2), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(245, 158, 11, 0.2), transparent),
+    radial-gradient(
+      1px 1px at 130px 80px,
+      rgba(248, 250, 252, 0.1),
+      transparent
+    ),
+    var(--bg-primary);
+  background-repeat: repeat;
+  background-size: 300px 200px;
+  animation: star-drift 180s linear infinite;
+  z-index: -1;
+  opacity: 0.4;
+}
+
+@keyframes star-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-300px);
+  }
+}
+
+/* === PROFESSIONAL SCROLLBAR === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--primary-blue),
+    var(--primary-blue-dark)
+  );
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-blue-light);
+}
+
+/* === SELECTION STYLING === */
+::selection {
+  background: var(--force-glow);
+  color: var(--text-primary);
+}
+
+/* === TYPOGRAPHY SYSTEM === */
+.heading-primary {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.heading-secondary {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.text-accent {
+  color: var(--text-accent);
+}
+
+.text-gold {
+  color: var(--accent-gold);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* === PROFESSIONAL COMPONENTS === */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-secondary);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-blue-dark)
+  );
+  color: var(--text-primary);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue-light),
+    var(--primary-blue)
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 12px 24px;
+  border: 1px solid var(--border-secondary);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card);
+  border-color: var(--border-accent);
+  color: var(--text-primary);
+}
+
+/* === SUBTLE GLOW EFFECTS === */
+.glow-subtle {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.glow-accent {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+/* === PROFESSIONAL GRADIENTS === */
+.gradient-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue-dark),
+    var(--primary-blue)
+  );
+}
+
+.gradient-accent {
+  background: linear-gradient(
+    135deg,
+    var(--accent-gold-dark),
+    var(--accent-gold)
+  );
+}
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue-light),
+    var(--accent-gold)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === IMMERSIVE SCROLLING (SUBTLE) === */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === SECTION BACKGROUNDS === */
+.section-hero {
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-tertiary) 100%
+  );
+}
+
+.section-about {
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+}
+
+.section-skills {
+  background: linear-gradient(
+    135deg,
+    var(--bg-tertiary) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-primary) 100%
+  );
+}
+
+.section-projects {
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary) 0%,
+    var(--bg-primary) 50%,
+    var(--bg-secondary) 100%
+  );
+}
+
+.section-contact {
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
+}
+
+/* === RESPONSIVE IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .star-field {
+    animation-duration: 240s;
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-field,
+  .scroll-reveal {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* === FOCUS ACCESSIBILITY === */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* === SUBTLE ANIMATIONS === */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
