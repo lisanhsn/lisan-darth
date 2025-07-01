@@ -187,7 +187,7 @@ export default function Navigation() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "tween", duration: 0.3 }}
-            className={`md:hidden absolute top-full left-0 right-0 transition-all duration-300 ${
+            className={`md:hidden fixed top-16 left-0 right-0 z-40 transition-all duration-300 ${
               isOpen
                 ? "bg-space-black bg-opacity-95 backdrop-blur-md border-b border-imperial-gray"
                 : "bg-transparent pointer-events-none"

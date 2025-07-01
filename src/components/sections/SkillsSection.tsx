@@ -129,7 +129,8 @@ export default function SkillsSection() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen py-20 bg-sith-gradient overflow-hidden"
+      id="skills"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-sith-gradient overflow-hidden"
     >
       {/* 3D Background */}
       <SkillsBackground3D />

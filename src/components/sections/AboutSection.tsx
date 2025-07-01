@@ -17,7 +17,7 @@ export default function AboutSection() {
     <section
       ref={ref}
       id="about"
-      className="relative min-h-screen py-20 overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black"
     >
       {/* Imperial Atmosphere Effects */}
       <div className="absolute inset-0 pointer-events-none">

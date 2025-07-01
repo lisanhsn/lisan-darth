@@ -34,6 +34,7 @@ export default function HeroSection() {
   return (
     <section
       ref={ref}
+      id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black pt-24 pb-16"
       onMouseMove={handleMouseMove}
     >
