@@ -17,13 +17,13 @@ export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isInteracting, setIsInteracting] = useState(false);
-  const { ref, inView } = useInView({ threshold: 0.3 });
+  const { ref, inView } = useInView({ threshold: 0.1 });
   const heroRef = useRef<HTMLElement>(null);
   const isMobile = useMobile();
 
   useEffect(() => {
-    setIsVisible(inView);
-  }, [inView]);
+    setIsVisible(true); // Show content immediately on mobile
+  }, []);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -37,34 +37,41 @@ export default function HeroSection() {
       ref={ref}
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black pt-24 pb-16"
-      onMouseMove={handleMouseMove}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      style={{
+        willChange: "transform",
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+        perspective: "1000px",
+      }}
     >
-      {/* Dynamic Star Field with Death Star */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="star-field"
-          animate={{
-            backgroundPosition: `${mousePosition.x * 20}px ${
-              mousePosition.y * 20
-            }px`,
-          }}
-          transition={{ type: "spring", stiffness: 50 }}
-        />
+      {/* Optimized Star Field with Death Star */}
+      <div className="absolute inset-0" style={{ willChange: "transform" }}>
+        {!isMobile ? (
+          <motion.div
+            className="star-field"
+            animate={{
+              backgroundPosition: `${mousePosition.x * 10}px ${
+                mousePosition.y * 10
+              }px`,
+            }}
+            transition={{ type: "tween", duration: 0.1 }}
+          />
+        ) : (
+          <div className="star-field" />
+        )}
 
-        {/* Death Star in background */}
-        <motion.div
-          className="absolute top-10 right-10 w-32 h-32 rounded-full bg-gradient-to-br from-imperial-gray to-space-dark opacity-20 shadow-2xl"
-          animate={{
-            rotate: 360,
-            scale: isInteracting ? 1.1 : 1,
-          }}
-          transition={{
-            rotate: { duration: 120, repeat: Infinity, ease: "linear" },
-            scale: { duration: 0.3 },
+        {/* Optimized Death Star */}
+        <div
+          className="absolute top-10 right-10 w-20 sm:w-32 h-20 sm:h-32 rounded-full bg-gradient-to-br from-imperial-gray to-space-dark opacity-20 shadow-2xl"
+          style={{
+            willChange: "transform",
+            animation: "spin 120s linear infinite",
+            transform: "translateZ(0)",
           }}
         >
-          <div className="absolute top-4 left-4 w-4 h-4 bg-imperial-red rounded-full shadow-lg shadow-imperial-red/50" />
-        </motion.div>
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 w-2 h-2 sm:w-4 sm:h-4 bg-imperial-red rounded-full shadow-lg shadow-imperial-red/50" />
+        </div>
       </div>
 
       {/* 3D Canvas Background - Simplified on mobile */}
@@ -100,95 +107,69 @@ export default function HeroSection() {
         </div>
       )}
 
-      {/* Mobile-optimized background with flying spaceship */}
+      {/* Mobile-optimized GPU accelerated background */}
       {isMobile && (
-        <div className="absolute inset-0 bg-gradient-to-br from-space-dark via-red-900/20 to-black opacity-60">
-          {/* Mobile 2D Flying Spaceship */}
-          <motion.div
-            className="absolute top-1/3 left-0 w-8 h-8"
-            initial={{ x: -50, opacity: 0 }}
-            animate={{
-              x: typeof window !== "undefined" ? window.innerWidth + 50 : 400,
-              opacity: [0, 1, 1, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              delay: 3,
-              ease: "easeInOut",
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-space-dark via-red-900/20 to-black opacity-60"
+          style={{ willChange: "transform" }}
+        >
+          {/* Lightweight CSS-only spaceships for mobile */}
+          <div
+            className="absolute top-1/3 w-4 h-2 bg-imperial-red rounded-full"
+            style={{
+              willChange: "transform",
+              animation: "flyAcross 6s ease-in-out infinite",
+              animationDelay: "1s",
             }}
           >
-            <div className="relative">
-              {/* Spaceship body */}
-              <div className="w-6 h-2 bg-imperial-red rounded-full relative z-10">
-                <div className="absolute -left-1 top-0 w-2 h-2 bg-imperial-gold rounded-full"></div>
-              </div>
-              {/* Engine trail */}
-              <motion.div
-                className="absolute -right-2 top-0.5 w-4 h-1 bg-gradient-to-r from-blue-400 to-transparent rounded-full"
-                animate={{
-                  width: [16, 24, 16],
-                  opacity: [0.6, 1, 0.6],
-                }}
-                transition={{
-                  duration: 0.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </div>
-          </motion.div>
+            <div className="absolute -left-1 top-0 w-2 h-2 bg-imperial-gold rounded-full" />
+            <div
+              className="absolute -right-2 top-0.5 w-3 h-0.5 bg-gradient-to-r from-blue-400 to-transparent rounded-full"
+              style={{
+                animation: "enginePulse 0.5s ease-in-out infinite",
+              }}
+            />
+          </div>
 
-          {/* Second mobile spaceship with different timing */}
-          <motion.div
-            className="absolute top-2/3 left-0 w-6 h-6"
-            initial={{ x: -40, opacity: 0 }}
-            animate={{
-              x: typeof window !== "undefined" ? window.innerWidth + 40 : 380,
-              opacity: [0, 1, 1, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              delay: 7,
-              ease: "easeInOut",
+          <div
+            className="absolute top-2/3 w-3 h-1.5 bg-energy-blue rounded-full"
+            style={{
+              willChange: "transform",
+              animation: "flyAcross 8s ease-in-out infinite",
+              animationDelay: "4s",
             }}
           >
-            <div className="relative">
-              {/* Smaller spaceship */}
-              <div className="w-4 h-1.5 bg-energy-blue rounded-full relative z-10">
-                <div className="absolute -left-0.5 top-0 w-1.5 h-1.5 bg-imperial-gold rounded-full"></div>
-              </div>
-              {/* Engine trail */}
-              <motion.div
-                className="absolute -right-1.5 top-0.5 w-3 h-0.5 bg-gradient-to-r from-orange-400 to-transparent rounded-full"
-                animate={{
-                  width: [12, 18, 12],
-                  opacity: [0.5, 0.9, 0.5],
-                }}
-                transition={{
-                  duration: 0.3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </div>
-          </motion.div>
+            <div className="absolute -left-0.5 top-0 w-1 h-1 bg-imperial-gold rounded-full" />
+            <div
+              className="absolute -right-1 top-0.5 w-2 h-0.5 bg-gradient-to-r from-orange-400 to-transparent rounded-full"
+              style={{
+                animation: "enginePulse 0.3s ease-in-out infinite",
+              }}
+            />
+          </div>
         </div>
       )}
 
       {/* Main Content Grid */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-screen lg:min-h-0">
+      <div
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-screen lg:min-h-0"
+        style={{ willChange: "transform" }}
+      >
         {/* Left Column - Content */}
-        <div className="space-y-8">
-          {/* Imperial Title */}
+        <div className="space-y-6 sm:space-y-8">
+          {/* Imperial Title - Immediate display on mobile */}
           <motion.div
-            initial={{ opacity: 0, x: -100 }}
+            initial={{ opacity: 0, x: isMobile ? 0 : -100 }}
             animate={{
-              opacity: isVisible ? 1 : 0,
-              x: isVisible ? 0 : -100,
+              opacity: 1,
+              x: 0,
             }}
-            transition={{ duration: 1, delay: 0.3 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.8,
+              delay: isMobile ? 0 : 0.1,
+              ease: "easeOut",
+            }}
+            style={{ willChange: "transform, opacity" }}
           >
             <motion.div className="flex items-center space-x-3 mb-6">
               <Crown className="w-8 h-8 text-imperial-gold" />
@@ -218,13 +199,18 @@ export default function HeroSection() {
 
           {/* Power Description */}
           <motion.div
-            initial={{ opacity: 0, x: -80 }}
+            initial={{ opacity: 0, x: isMobile ? 0 : -50 }}
             animate={{
-              opacity: isVisible ? 1 : 0,
-              x: isVisible ? 0 : -80,
+              opacity: 1,
+              x: 0,
             }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="space-y-6"
+            transition={{
+              duration: isMobile ? 0.3 : 0.6,
+              delay: isMobile ? 0.1 : 0.2,
+              ease: "easeOut",
+            }}
+            className="space-y-4 sm:space-y-6"
+            style={{ willChange: "transform, opacity" }}
           >
             <p className="text-base sm:text-lg md:text-xl text-imperial-white leading-relaxed">
               Self-taught master of the{" "}
@@ -248,13 +234,18 @@ export default function HeroSection() {
 
           {/* Skills Highlights */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: isMobile ? 0 : 20 }}
             animate={{
-              opacity: isVisible ? 1 : 0,
-              y: isVisible ? 0 : 30,
+              opacity: 1,
+              y: 0,
             }}
-            transition={{ duration: 1, delay: 0.9 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.6,
+              delay: isMobile ? 0.2 : 0.3,
+              ease: "easeOut",
+            }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+            style={{ willChange: "transform, opacity" }}
           >
             {[
               { icon: Code, label: "Full-Stack" },
@@ -265,13 +256,17 @@ export default function HeroSection() {
               return (
                 <motion.div
                   key={skill.label}
-                  className="bg-space-dark/50 backdrop-blur-sm border border-imperial-gray rounded-lg p-4 text-center"
-                  whileHover={{
-                    scale: 1.05,
-                    borderColor: "rgb(220, 38, 38)",
-                    boxShadow: "0 0 20px rgba(220, 38, 38, 0.3)",
-                  }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className="bg-space-dark/50 backdrop-blur-sm border border-imperial-gray rounded-lg p-4 text-center transition-all duration-200"
+                  whileHover={
+                    isMobile
+                      ? {}
+                      : {
+                          scale: 1.02,
+                          borderColor: "rgb(220, 38, 38)",
+                        }
+                  }
+                  transition={{ type: "tween", duration: 0.2 }}
+                  style={{ willChange: "transform" }}
                 >
                   <Icon className="w-8 h-8 text-imperial-gold mx-auto mb-2" />
                   <div className="text-sm font-orbitron font-bold text-imperial-white">
@@ -284,23 +279,30 @@ export default function HeroSection() {
 
           {/* Imperial CTA Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: isMobile ? 0 : 20 }}
             animate={{
-              opacity: isVisible ? 1 : 0,
-              y: isVisible ? 0 : 30,
+              opacity: 1,
+              y: 0,
             }}
-            transition={{ duration: 1, delay: 1.2 }}
+            transition={{
+              duration: isMobile ? 0.3 : 0.6,
+              delay: isMobile ? 0.3 : 0.4,
+              ease: "easeOut",
+            }}
             className="flex flex-col sm:flex-row gap-4"
+            style={{ willChange: "transform, opacity" }}
           >
             <motion.button
-              className="relative group px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-imperial-red to-red-900 text-imperial-white font-orbitron font-bold rounded-lg border-2 border-imperial-red overflow-hidden text-sm sm:text-base"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="relative group px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-imperial-red to-red-900 text-imperial-white font-orbitron font-bold rounded-lg border-2 border-imperial-red overflow-hidden text-sm sm:text-base transition-transform duration-200"
+              whileHover={isMobile ? {} : { scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "tween", duration: 0.2 }}
               onClick={() => {
                 document
                   .getElementById("projects")
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
+              style={{ willChange: "transform" }}
             >
               <span className="relative z-10 flex items-center space-x-2">
                 <Crown className="w-5 h-5" />
@@ -316,14 +318,16 @@ export default function HeroSection() {
             </motion.button>
 
             <motion.button
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-lg hover:bg-imperial-gold hover:text-space-dark transition-colors duration-300 text-sm sm:text-base"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-lg hover:bg-imperial-gold hover:text-space-dark transition-all duration-200 text-sm sm:text-base"
+              whileHover={isMobile ? {} : { scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "tween", duration: 0.2 }}
               onClick={() => {
                 document
                   .getElementById("skills")
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
+              style={{ willChange: "transform" }}
             >
               <span className="flex items-center space-x-2">
                 <Zap className="w-5 h-5" />
@@ -332,14 +336,16 @@ export default function HeroSection() {
             </motion.button>
 
             <motion.button
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-blue text-imperial-blue font-orbitron font-bold rounded-lg hover:bg-imperial-blue hover:text-imperial-white transition-colors duration-300 text-sm sm:text-base"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-imperial-blue text-imperial-blue font-orbitron font-bold rounded-lg hover:bg-imperial-blue hover:text-imperial-white transition-all duration-200 text-sm sm:text-base"
+              whileHover={isMobile ? {} : { scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "tween", duration: 0.2 }}
               onClick={() => {
                 document
                   .getElementById("contact")
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
+              style={{ willChange: "transform" }}
             >
               <span className="flex items-center space-x-2">
                 <Mail className="w-5 h-5" />
@@ -349,27 +355,39 @@ export default function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Right Column - Interactive 3D Darth Vader */}
+        {/* Right Column - Optimized for Mobile */}
         <motion.div
           className="relative flex justify-center items-center"
-          initial={{ opacity: 0, x: 100 }}
+          initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
           animate={{
-            opacity: isVisible ? 1 : 0,
-            x: isVisible ? 0 : 100,
+            opacity: 1,
+            x: 0,
           }}
-          transition={{ duration: 1, delay: 0.8 }}
-          onMouseEnter={() => setIsInteracting(true)}
-          onMouseLeave={() => setIsInteracting(false)}
+          transition={{
+            duration: isMobile ? 0.4 : 0.8,
+            delay: isMobile ? 0.4 : 0.5,
+            ease: "easeOut",
+          }}
+          onMouseEnter={isMobile ? undefined : () => setIsInteracting(true)}
+          onMouseLeave={isMobile ? undefined : () => setIsInteracting(false)}
+          style={{ willChange: "transform, opacity" }}
         >
-          {/* Interactive SVG Darth Vader */}
+          {/* Optimized SVG Darth Vader */}
           <motion.div
             className="relative z-10"
-            animate={{
-              rotateY: mousePosition.x * 10,
-              rotateX: -mousePosition.y * 5,
+            animate={
+              isMobile
+                ? {}
+                : {
+                    rotateY: mousePosition.x * 5,
+                    rotateX: -mousePosition.y * 3,
+                  }
+            }
+            transition={{ type: "tween", duration: 0.3 }}
+            style={{
+              transformStyle: isMobile ? "flat" : "preserve-3d",
+              willChange: "transform",
             }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-            style={{ transformStyle: "preserve-3d" }}
           >
             <EnhancedSVGDarthVader
               mousePosition={isMobile ? { x: 0, y: 0 } : mousePosition}
@@ -377,16 +395,19 @@ export default function HeroSection() {
               className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 drop-shadow-2xl"
             />
 
-            {/* Power Aura */}
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              animate={{
-                boxShadow: isInteracting
-                  ? "0 0 100px rgba(220, 38, 38, 0.6), 0 0 200px rgba(220, 38, 38, 0.3)"
-                  : "0 0 50px rgba(220, 38, 38, 0.3), 0 0 100px rgba(220, 38, 38, 0.1)",
-              }}
-              transition={{ duration: 0.3 }}
-            />
+            {/* Optimized Power Aura */}
+            {!isMobile && (
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                animate={{
+                  boxShadow: isInteracting
+                    ? "0 0 80px rgba(220, 38, 38, 0.4), 0 0 120px rgba(220, 38, 38, 0.2)"
+                    : "0 0 40px rgba(220, 38, 38, 0.2), 0 0 80px rgba(220, 38, 38, 0.1)",
+                }}
+                transition={{ duration: 0.3 }}
+                style={{ willChange: "box-shadow" }}
+              />
+            )}
           </motion.div>
 
           {/* Force Lightning Effects - Disabled on mobile for performance */}
@@ -424,29 +445,32 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isVisible ? 1 : 0 }}
-        transition={{ duration: 1, delay: 2 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
+      {/* Scroll Indicator - Hidden on mobile for cleaner UX */}
+      {!isMobile && (
         <motion.div
-          className="flex flex-col items-center space-y-2 text-imperial-gold"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          onClick={() => {
-            document
-              .getElementById("about")
-              ?.scrollIntoView({ behavior: "smooth" });
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          style={{ willChange: "transform, opacity" }}
         >
-          <span className="text-xs font-orbitron font-medium cursor-pointer">
-            EXPLORE THE EMPIRE
-          </span>
-          <div className="w-0.5 h-6 bg-gradient-to-b from-imperial-red to-transparent" />
+          <motion.div
+            className="flex flex-col items-center space-y-2 text-imperial-gold"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            onClick={() => {
+              document
+                .getElementById("about")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <span className="text-xs font-orbitron font-medium cursor-pointer">
+              EXPLORE THE EMPIRE
+            </span>
+            <div className="w-0.5 h-6 bg-gradient-to-b from-imperial-red to-transparent" />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </section>
   );
 }

@@ -425,3 +425,72 @@ a:focus-visible {
 .animate-pulse-subtle {
   animation: pulse-subtle 3s ease-in-out infinite;
 }
+
+/* === MOBILE GPU ACCELERATION === */
+@media (max-width: 768px) {
+  /* Additional GPU acceleration for mobile */
+  .star-field,
+  .space-gradient,
+  .imperial-gradient,
+  .sith-gradient,
+  .bg-gradient-to-br {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Mobile-specific animations */
+  body {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+  }
+
+  /* Optimize section rendering */
+  section {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* === MOBILE SPACESHIP ANIMATIONS === */
+@keyframes flyAcross {
+  0% {
+    transform: translateX(-100vw) translateZ(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw) translateZ(0);
+    opacity: 0;
+  }
+}
+
+@keyframes enginePulse {
+  0%,
+  100% {
+    transform: scaleX(1) translateZ(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleX(1.5) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg) translateZ(0);
+  }
+  100% {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
