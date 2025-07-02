@@ -3,7 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Imperial Color Palette */
 :root {
+  --imperial-red: #dc2626;
+  --imperial-gold: #f59e0b;
+
   /* === PROFESSIONAL DARK PALETTE === */
   --primary-blue: #3b82f6;
   --primary-blue-light: #60a5fa;
@@ -46,6 +50,241 @@
   --rebel-accent: #f59e0b;
   --jedi-accent: #3b82f6;
   --force-glow: rgba(59, 130, 246, 0.2);
+}
+
+/* High Performance & GPU Acceleration Base */
+*,
+*::before,
+*::after {
+  /* Force GPU acceleration */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+  /* Optimize text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* High Refresh Rate Optimizations */
+@media (min-resolution: 120dpi), (min-resolution: 2dppx) {
+  * {
+    will-change: transform, opacity;
+  }
+
+  /* Smooth scrolling for high refresh rate displays */
+  html {
+    scroll-behavior: auto; /* Let browser handle smooth scrolling natively */
+  }
+}
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+  /* Force hardware acceleration on mobile */
+  * {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    /* Prevent overscroll bounce */
+    overscroll-behavior: none;
+    /* Limit touch actions for better performance */
+    touch-action: pan-y;
+  }
+
+  /* Optimize animations for mobile */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      animation-duration: 0.15s !important;
+      transition-duration: 0.15s !important;
+    }
+  }
+
+  /* Disable reduced motion animations on mobile for performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* Touch Optimizations */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* High Performance Scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Custom Imperial Colors */
+.text-imperial-red {
+  color: var(--imperial-red);
+}
+
+.text-imperial-gold {
+  color: var(--imperial-gold);
+}
+
+.bg-imperial-red {
+  background-color: var(--imperial-red);
+}
+
+.bg-imperial-gold {
+  background-color: var(--imperial-gold);
+}
+
+.border-imperial-red {
+  border-color: var(--imperial-red);
+}
+
+.border-imperial-gold {
+  border-color: var(--imperial-gold);
+}
+
+/* GPU-Accelerated Glassmorphism */
+.glass-effect {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Performance-optimized animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* High Performance Layout */
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-style {
+  contain: style;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+/* Mobile-first responsive typography */
+@media (max-width: 480px) {
+  .text-responsive-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .text-responsive-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .text-responsive-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .text-responsive-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+/* Optimize for devices with notches */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Critical performance optimizations */
+img {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+video {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Smooth scrolling performance */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable animations on low-end devices */
+@media (max-width: 768px) and (max-height: 1024px) {
+  @media (prefers-reduced-motion: no-preference) {
+    .motion-reduce-mobile * {
+      animation-duration: 0.1s !important;
+      transition-duration: 0.1s !important;
+    }
+  }
+}
+
+/* 120fps+ display optimizations */
+@media (min-resolution: 120dpi) and (min-refresh-rate: 90hz) {
+  .high-refresh * {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+}
+
+/* Force repaint containment for better performance */
+.performance-container {
+  contain: layout style paint;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 * {
@@ -319,73 +558,6 @@ body {
     var(--bg-primary) 0%,
     var(--bg-secondary) 100%
   );
-}
-
-/* === RESPONSIVE IMPROVEMENTS === */
-@media (max-width: 768px) {
-  .star-field {
-    animation-duration: 240s;
-    opacity: 0.2;
-  }
-
-  /* Mobile Performance Optimizations */
-  * {
-    -webkit-transform-style: flat;
-    transform-style: flat;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-
-  /* Disable expensive effects on mobile */
-  .animate-pulse-subtle,
-  .animate-fade-in {
-    animation: none !important;
-  }
-
-  /* Optimize text rendering */
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeSpeed;
-  }
-
-  /* Reduce blur effects */
-  .backdrop-blur-sm {
-    backdrop-filter: blur(4px);
-  }
-
-  /* Optimize scrolling */
-  .overflow-x-hidden {
-    overscroll-behavior-x: none;
-  }
-
-  /* Prevent zoom on input focus */
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-
-  /* Optimize touch interactions */
-  button,
-  a {
-    touch-action: manipulation;
-  }
-
-  /* Better mobile layout */
-  .max-w-7xl {
-    max-width: 100%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .star-field,
-  .scroll-reveal {
-    animation: none;
-    transition: none;
-  }
 }
 
 /* === FOCUS ACCESSIBILITY === */

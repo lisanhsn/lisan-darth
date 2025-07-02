@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X, Home, User, Code, Briefcase, Mail } from "lucide-react";
+import {
+  useWebGLOptimizations,
+  getOptimalAnimationDuration,
+} from "@/hooks/useWebGLOptimizations";
 
 const navigationItems = [
   { id: "home", label: "Home", icon: Home },
@@ -16,106 +20,204 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isScrolled, setIsScrolled] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+  const perfSettings = useWebGLOptimizations();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+  // Throttled scroll handler for better performance
+  const handleScroll = useCallback(() => {
+    const scrollY = window.scrollY;
+    setIsScrolled(scrollY > 50);
 
-      const sections = navigationItems.map((item) =>
-        document.getElementById(item.id)
-      );
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
+    // Simplified section detection for performance
+    const sections = navigationItems.map((item) => ({
+      id: item.id,
+      element: document.getElementById(item.id),
+    }));
 
-      for (const section of sections) {
+    const scrollPosition = scrollY + window.innerHeight / 2;
+
+    for (const section of sections) {
+      if (section.element) {
+        const { offsetTop, offsetHeight } = section.element;
         if (
-          section &&
-          scrollPosition >= section.offsetTop &&
-          scrollPosition < section.offsetTop + section.offsetHeight
+          scrollPosition >= offsetTop &&
+          scrollPosition < offsetTop + offsetHeight
         ) {
           setActiveSection(section.id);
           break;
         }
       }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    }
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
+  useEffect(() => {
+    let ticking = false;
+
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => window.removeEventListener("scroll", throttledScroll);
+  }, [handleScroll]);
+
+  const scrollToSection = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     setIsOpen(false);
+  }, []);
+
+  // Performance-optimized motion variants
+  const getNavVariants = () => {
+    const duration = getOptimalAnimationDuration(300, perfSettings);
+    return {
+      hidden: { y: -100, opacity: 0 },
+      visible: {
+        y: 0,
+        opacity: 1,
+        transition: {
+          duration: shouldReduceMotion ? 0 : duration / 1000,
+          ease: "easeOut",
+        },
+      },
+    };
+  };
+
+  const getMobileMenuVariants = () => {
+    const duration = getOptimalAnimationDuration(150, perfSettings);
+    return {
+      hidden: { opacity: 0, scale: 0.95, y: -10 },
+      visible: {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: {
+          duration: shouldReduceMotion ? 0 : duration / 1000,
+          ease: "easeOut",
+        },
+      },
+      exit: {
+        opacity: 0,
+        scale: 0.95,
+        y: -10,
+        transition: {
+          duration: shouldReduceMotion ? 0 : (duration * 0.7) / 1000,
+        },
+      },
+    };
+  };
+
+  // Optimize animations based on device performance
+  const getHoverAnimation = () => {
+    if (
+      shouldReduceMotion ||
+      perfSettings.isMobile ||
+      perfSettings.qualityLevel === "low"
+    ) {
+      return {};
+    }
+
+    return perfSettings.supportsHighRefreshRate
+      ? { scale: 1.03, transition: { duration: 0.1 } }
+      : { scale: 1.02, transition: { duration: 0.15 } };
+  };
+
+  const getTapAnimation = () => {
+    if (shouldReduceMotion) return {};
+
+    return perfSettings.isMobile
+      ? { scale: 0.98, transition: { duration: 0.05 } }
+      : { scale: 0.97, transition: { duration: 0.1 } };
+  };
+
+  // Dynamic blur amount based on performance
+  const getBlurAmount = () => {
+    switch (perfSettings.qualityLevel) {
+      case "low":
+        return "blur(8px)";
+      case "medium":
+        return "blur(16px)";
+      case "high":
+        return "blur(24px)";
+      default:
+        return "blur(16px)";
+    }
   };
 
   return (
     <>
-      {/* Fixed Glassy Navigation Bar */}
+      {/* High-Performance Fixed Navigation */}
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all ${
+          perfSettings.targetFPS >= 120 ? "duration-100" : "duration-200"
+        } ${
           isScrolled
-            ? "bg-black/20 backdrop-blur-xl border-b border-white/10 shadow-2xl"
-            : "bg-white/5 backdrop-blur-lg border-b border-white/5"
+            ? "bg-black/30 backdrop-blur-xl border-b border-white/10"
+            : "bg-black/10 backdrop-blur-lg border-b border-white/5"
         }`}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
         style={{
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          willChange: "transform, opacity",
+          transform: "translateZ(0)",
+          backdropFilter: getBlurAmount(),
+          WebkitBackdropFilter: getBlurAmount(),
+          contain: "layout style paint",
         }}
+        variants={getNavVariants()}
+        initial="hidden"
+        animate="visible"
       >
-        {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/5" />
-
-        {/* Animated border glow */}
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-imperial-red/50 to-transparent"
-          animate={{
-            opacity: [0.3, 0.8, 0.3],
+        {/* Optimized glassmorphism overlay */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-white/3 via-transparent to-white/3"
+          style={{
+            willChange: "transform",
+            transform: "translateZ(0)",
           }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            {/* Optimized Logo */}
             <motion.div
-              className="flex items-center space-x-3"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="flex items-center space-x-2 sm:space-x-3"
+              style={{ willChange: "transform" }}
+              whileHover={getHoverAnimation()}
+              whileTap={getTapAnimation()}
             >
-              <div className="relative">
-                <motion.div
-                  className="w-8 h-8 rounded-full bg-gradient-to-br from-imperial-red/80 to-imperial-gold/80 p-0.5"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                >
-                  <div className="w-full h-full bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <div className="w-3 h-3 bg-imperial-red rounded-full" />
-                  </div>
-                </motion.div>
-                {/* Pulsing ring */}
-                <motion.div
-                  className="absolute inset-0 w-8 h-8 border border-imperial-gold/30 rounded-full"
-                  animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
+              <div
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-imperial-red/80 to-imperial-gold/80 p-0.5"
+                style={{
+                  willChange: "transform",
+                  transform: "translateZ(0)",
+                }}
+              >
+                <div className="w-full h-full bg-black/50 rounded-full flex items-center justify-center">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-imperial-red rounded-full" />
+                </div>
               </div>
-              <span className="text-white font-orbitron font-bold text-xl tracking-wider">
-                DARTH LISAN
+              <span className="text-white font-bold text-lg sm:text-xl tracking-wider">
+                DL
               </span>
             </motion.div>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - Performance Optimized */}
             <div className="hidden md:flex items-center justify-center flex-1 mx-8">
-              <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+              <div
+                className="flex items-center space-x-1 bg-white/8 backdrop-blur-md rounded-full px-4 py-2 border border-white/15"
+                style={{
+                  willChange: "transform",
+                  transform: "translateZ(0)",
+                  backdropFilter: getBlurAmount(),
+                }}
+              >
                 {navigationItems.map((item) => {
                   const IconComponent = item.icon;
                   const isActive = activeSection === item.id;
@@ -124,62 +226,82 @@ export default function Navigation() {
                     <motion.button
                       key={item.id}
                       onClick={() => scrollToSection(item.id)}
-                      className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                      className={`relative px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                        perfSettings.targetFPS >= 120
+                          ? "duration-100"
+                          : "duration-200"
+                      } ${
                         isActive
-                          ? "text-imperial-gold bg-white/20 shadow-lg"
+                          ? "text-imperial-gold bg-white/20"
                           : "text-white/80 hover:text-white hover:bg-white/10"
                       }`}
-                      whileHover={{ scale: 1.05, y: -1 }}
-                      whileTap={{ scale: 0.95 }}
+                      style={{
+                        willChange: "transform",
+                        transform: "translateZ(0)",
+                      }}
+                      whileHover={getHoverAnimation()}
+                      whileTap={getTapAnimation()}
                     >
                       <div className="flex items-center space-x-2">
                         <IconComponent size={16} />
                         <span className="hidden lg:inline">{item.label}</span>
                       </div>
 
-                      {/* Active indicator */}
-                      {isActive && (
+                      {isActive && !shouldReduceMotion && (
                         <motion.div
-                          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-imperial-red rounded-full"
+                          className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-imperial-red rounded-full"
                           layoutId="activeIndicator"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ duration: 0.3 }}
+                          style={{
+                            willChange: "transform",
+                            transform: "translateZ(0)",
+                          }}
+                          transition={{
+                            duration:
+                              getOptimalAnimationDuration(200, perfSettings) /
+                              1000,
+                          }}
                         />
                       )}
-
-                      {/* Glow effect on hover */}
-                      <motion.div
-                        className="absolute inset-0 rounded-full bg-gradient-to-r from-imperial-red/20 to-imperial-gold/20 opacity-0"
-                        whileHover={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
                     </motion.button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Touch Optimized */}
             <motion.button
-              className="md:hidden p-3 text-white/80 hover:text-white hover:bg-white/10 rounded-full backdrop-blur-sm border border-white/20 transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              className={`md:hidden p-2 sm:p-3 text-white/80 hover:text-white hover:bg-white/10 rounded-full backdrop-blur-sm border border-white/20 transition-colors touch-manipulation ${
+                perfSettings.targetFPS >= 120 ? "duration-75" : "duration-150"
+              }`}
+              style={{
+                willChange: "transform",
+                WebkitTapHighlightColor: "transparent",
+                transform: "translateZ(0)",
+                minHeight: "44px", // iOS touch target minimum
+                minWidth: "44px",
+              }}
+              whileHover={getHoverAnimation()}
+              whileTap={getTapAnimation()}
               onClick={() => setIsOpen(!isOpen)}
             >
               <motion.div
                 animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{
+                  duration: shouldReduceMotion
+                    ? 0
+                    : getOptimalAnimationDuration(200, perfSettings) / 1000,
+                }}
+                style={{ willChange: "transform" }}
               >
-                {isOpen ? <X size={20} /> : <Menu size={20} />}
+                {isOpen ? <X size={18} /> : <Menu size={18} />}
               </motion.div>
             </motion.button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
+      {/* Performance-Optimized Mobile Menu */}
+      <AnimatePresence mode="wait">
         {isOpen && (
           <>
             {/* Backdrop */}
@@ -187,20 +309,44 @@ export default function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{
+                duration: shouldReduceMotion
+                  ? 0
+                  : getOptimalAnimationDuration(150, perfSettings) / 1000,
+              }}
               onClick={() => setIsOpen(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              style={{
+                willChange: "opacity",
+                transform: "translateZ(0)",
+                backdropFilter:
+                  perfSettings.qualityLevel === "low"
+                    ? "blur(4px)"
+                    : "blur(8px)",
+              }}
             />
 
             {/* Mobile Menu Panel */}
             <motion.div
-              initial={{ opacity: 0, y: -20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.9 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="fixed top-20 left-4 right-4 z-50 md:hidden"
+              variants={getMobileMenuVariants()}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-16 left-3 right-3 z-50 md:hidden"
+              style={{
+                willChange: "transform, opacity",
+                transform: "translateZ(0)",
+              }}
             >
-              <div className="bg-black/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl">
-                <div className="space-y-2">
+              <div
+                className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-2xl"
+                style={{
+                  willChange: "transform",
+                  transform: "translateZ(0)",
+                  backdropFilter: getBlurAmount(),
+                }}
+              >
+                <div className="space-y-1">
                   {navigationItems.map((item, index) => {
                     const IconComponent = item.icon;
                     const isActive = activeSection === item.id;
@@ -209,33 +355,55 @@ export default function Navigation() {
                       <motion.button
                         key={item.id}
                         onClick={() => scrollToSection(item.id)}
-                        className={`w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all duration-300 ${
+                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all touch-manipulation ${
+                          perfSettings.targetFPS >= 120
+                            ? "duration-100"
+                            : "duration-200"
+                        } ${
                           isActive
                             ? "text-imperial-gold bg-white/20 border border-imperial-gold/30"
                             : "text-white/80 hover:text-white hover:bg-white/10"
                         }`}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        whileHover={{ scale: 1.02, x: 5 }}
-                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          willChange: "transform",
+                          WebkitTapHighlightColor: "transparent",
+                          transform: "translateZ(0)",
+                          minHeight: "48px", // Larger touch target for mobile
+                        }}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                          transition: {
+                            delay: shouldReduceMotion ? 0 : index * 0.02,
+                            duration: shouldReduceMotion
+                              ? 0
+                              : getOptimalAnimationDuration(100, perfSettings) /
+                                1000,
+                          },
+                        }}
+                        whileTap={getTapAnimation()}
                       >
                         <div
                           className={`p-2 rounded-lg ${
                             isActive ? "bg-imperial-red/20" : "bg-white/10"
                           }`}
                         >
-                          <IconComponent size={20} />
+                          <IconComponent size={18} />
                         </div>
-                        <span className="font-medium text-lg">
-                          {item.label}
-                        </span>
-                        {isActive && (
+                        <span className="font-medium">{item.label}</span>
+                        {isActive && !shouldReduceMotion && (
                           <motion.div
                             className="ml-auto w-2 h-2 bg-imperial-red rounded-full"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: 0.2 }}
+                            transition={{
+                              delay: 0.05,
+                              duration:
+                                getOptimalAnimationDuration(100, perfSettings) /
+                                1000,
+                            }}
+                            style={{ willChange: "transform" }}
                           />
                         )}
                       </motion.button>

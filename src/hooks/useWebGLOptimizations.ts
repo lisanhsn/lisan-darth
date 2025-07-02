@@ -1,192 +1,283 @@
 "use client";
 
-import { useMemo, useCallback, useEffect, useState } from "react";
-import { useMobile } from "./useMobile";
+import { useEffect, useState, useCallback } from "react";
 
-interface WebGLSettings {
-  rendererSettings: {
-    antialias: boolean;
-    alpha: boolean;
-    powerPreference: "default" | "high-performance" | "low-power";
-    stencil: boolean;
-    depth: boolean;
-    logarithmicDepthBuffer: boolean;
-    precision: "highp" | "mediump" | "lowp";
-    premultipliedAlpha: boolean;
-    preserveDrawingBuffer: boolean;
-    failIfMajorPerformanceCaveat: boolean;
-  };
-  cameraSettings: {
-    position: [number, number, number];
-    fov: number;
-    near: number;
-    far: number;
-  };
-  performanceSettings: {
-    pixelRatio: number;
-    shadowMapSize: number;
-    particleCount: number;
-    lightDistance: number;
-  };
+interface PerformanceSettings {
+  isHighPerformanceDevice: boolean;
+  shouldReduceMotion: boolean;
+  targetFPS: number;
+  gpuTier: 'low' | 'medium' | 'high';
+  isMobile: boolean;
+  supportsHighRefreshRate: boolean;
+  shouldUseGPUAcceleration: boolean;
+  qualityLevel: 'low' | 'medium' | 'high';
 }
 
-export const useWebGLOptimizations = () => {
-  const isMobile = useMobile();
-  const [performanceLevel, setPerformanceLevel] = useState<"high" | "medium" | "low">("high");
+export function useWebGLOptimizations(): PerformanceSettings {
+  const [settings, setSettings] = useState<PerformanceSettings>({
+    isHighPerformanceDevice: true,
+    shouldReduceMotion: false,
+    targetFPS: 60,
+    gpuTier: 'medium',
+    isMobile: false,
+    supportsHighRefreshRate: false,
+    shouldUseGPUAcceleration: true,
+    qualityLevel: 'medium'
+  });
 
-  // Detect WebGL capabilities
-  const webglCapabilities = useMemo(() => {
-    if (typeof window === "undefined") return { webgl2: false, maxTextures: 8, maxAnisotropy: 1 };
-    
-    const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-    
-    if (!gl) return { webgl2: false, maxTextures: 8, maxAnisotropy: 1 };
+  const detectDeviceCapabilities = useCallback(() => {
+    if (typeof window === 'undefined') return;
 
-    const isWebGL2 = gl instanceof WebGL2RenderingContext;
-    const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-    
-    // Check for anisotropic filtering
-    const ext = gl.getExtension('EXT_texture_filter_anisotropic');
-    const maxAnisotropy = ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : 1;
+    // Detect mobile devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) || window.innerWidth <= 768;
 
-    return { webgl2: isWebGL2, maxTextures, maxAnisotropy };
+    // Detect high refresh rate support
+    const supportsHighRefreshRate = window.screen && 
+      ('mozOrientation' in window.screen || 'msOrientation' in window.screen) ||
+      window.devicePixelRatio >= 2;
+
+    // Detect reduced motion preference
+    const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // GPU Performance Detection
+    let gpuTier: 'low' | 'medium' | 'high' = 'medium';
+    let shouldUseGPUAcceleration = true;
+    
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : '';
+        
+        // Basic GPU tier detection
+        if (renderer.toLowerCase().includes('intel') || 
+            renderer.toLowerCase().includes('qualcomm') ||
+            renderer.toLowerCase().includes('mali')) {
+          gpuTier = isMobile ? 'low' : 'medium';
+        } else if (renderer.toLowerCase().includes('nvidia') || 
+                   renderer.toLowerCase().includes('amd') ||
+                   renderer.toLowerCase().includes('apple')) {
+          gpuTier = isMobile ? 'medium' : 'high';
+        }
+      } else {
+        shouldUseGPUAcceleration = false;
+        gpuTier = 'low';
+      }
+    } catch (error) {
+      console.warn('GPU detection failed:', error);
+      gpuTier = 'low';
+    }
+
+    // Memory and performance heuristics
+    const memory = (navigator as any).deviceMemory || 4;
+    const cores = navigator.hardwareConcurrency || 4;
+    
+    const isHighPerformanceDevice = 
+      memory >= 4 && 
+      cores >= 4 && 
+      !isMobile && 
+      gpuTier !== 'low';
+
+    // Target FPS based on device capabilities
+    let targetFPS = 60;
+    if (supportsHighRefreshRate && isHighPerformanceDevice) {
+      targetFPS = 120;
+    } else if (supportsHighRefreshRate && !isMobile) {
+      targetFPS = 90;
+    } else if (isMobile && gpuTier === 'low') {
+      targetFPS = 30;
+    }
+
+    // Quality level determination
+    let qualityLevel: 'low' | 'medium' | 'high' = 'medium';
+    if (isMobile && gpuTier === 'low') {
+      qualityLevel = 'low';
+    } else if (isHighPerformanceDevice && gpuTier === 'high') {
+      qualityLevel = 'high';
+    }
+
+    setSettings({
+      isHighPerformanceDevice,
+      shouldReduceMotion,
+      targetFPS,
+      gpuTier,
+      isMobile,
+      supportsHighRefreshRate,
+      shouldUseGPUAcceleration,
+      qualityLevel
+    });
+
+    // Apply performance optimizations to document
+    applyPerformanceOptimizations({
+      isHighPerformanceDevice,
+      shouldReduceMotion,
+      targetFPS,
+      gpuTier,
+      isMobile,
+      supportsHighRefreshRate,
+      shouldUseGPUAcceleration,
+      qualityLevel
+    });
   }, []);
 
-  // Adaptive performance settings based on device and performance level
-  const webglSettings = useMemo((): WebGLSettings => {
-    const baseSettings = {
-      high: {
-        antialias: true,
-        powerPreference: "high-performance" as const,
-        precision: "highp" as const,
-        pixelRatio: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2),
-        shadowMapSize: 2048,
-        particleCount: 3000,
-        lightDistance: 50,
-      },
-      medium: {
-        antialias: !isMobile,
-        powerPreference: "default" as const,
-        precision: "mediump" as const,
-        pixelRatio: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 1.5),
-        shadowMapSize: 1024,
-        particleCount: 1500,
-        lightDistance: 30,
-      },
-      low: {
-        antialias: false,
-        powerPreference: "low-power" as const,
-        precision: "lowp" as const,
-        pixelRatio: 1,
-        shadowMapSize: 512,
-        particleCount: 500,
-        lightDistance: 20,
-      },
-    };
+  const applyPerformanceOptimizations = useCallback((settings: PerformanceSettings) => {
+    if (typeof document === 'undefined') return;
 
-    const currentSettings = baseSettings[performanceLevel];
+    const root = document.documentElement;
 
-    return {
-      rendererSettings: {
-        antialias: currentSettings.antialias,
-        alpha: true,
-        powerPreference: currentSettings.powerPreference,
-        stencil: false,
-        depth: true,
-        logarithmicDepthBuffer: false,
-        precision: currentSettings.precision,
-        premultipliedAlpha: true,
-        preserveDrawingBuffer: false,
-        failIfMajorPerformanceCaveat: false,
-      },
-      cameraSettings: {
-        position: [0, 0, 5] as [number, number, number],
-        fov: isMobile ? 70 : 75,
-        near: 0.1,
-        far: 1000,
-      },
-      performanceSettings: {
-        pixelRatio: currentSettings.pixelRatio,
-        shadowMapSize: currentSettings.shadowMapSize,
-        particleCount: currentSettings.particleCount,
-        lightDistance: currentSettings.lightDistance,
-      },
-    };
-  }, [isMobile, performanceLevel, webglCapabilities]);
+    // Set CSS custom properties for performance optimizations
+    root.style.setProperty('--target-fps', settings.targetFPS.toString());
+    root.style.setProperty('--gpu-tier', settings.gpuTier);
+    root.style.setProperty('--quality-level', settings.qualityLevel);
 
-  // WebGL renderer initialization callback
-  const onWebGLCreated = useCallback(({ gl, scene, camera }: any) => {
-    // Set pixel ratio for optimal performance
-    gl.setPixelRatio(webglSettings.performanceSettings.pixelRatio);
-    
-    // Enable shadows with optimized settings
-    gl.shadowMap.enabled = true;
-    gl.shadowMap.type = 2; // THREE.PCFSoftShadowMap
-    
-    // Set encoding and tone mapping for better visuals
-    gl.outputEncoding = 3001; // THREE.sRGBEncoding
-    gl.toneMapping = 4; // THREE.ACESFilmicToneMapping
-    gl.toneMappingExposure = 1.2;
-    
-    // Enable frustum culling for performance
-    camera.matrixAutoUpdate = true;
-    scene.matrixAutoUpdate = true;
-    
-    // Optimize rendering
-    gl.info.autoReset = false;
-    
-    // Pre-compile shaders
-    gl.compile(scene, camera);
-    
-    console.log("WebGL initialized with performance level:", performanceLevel);
-    console.log("WebGL capabilities:", webglCapabilities);
-  }, [webglSettings, performanceLevel, webglCapabilities]);
-
-  // Performance monitoring callbacks
-  const onPerformanceIncline = useCallback(() => {
-    if (performanceLevel === "low") {
-      setPerformanceLevel("medium");
-    } else if (performanceLevel === "medium") {
-      setPerformanceLevel("high");
+    // Apply GPU acceleration classes
+    if (settings.shouldUseGPUAcceleration) {
+      document.body.classList.add('gpu-accelerated');
     }
-    console.log("Performance improved - upgraded to:", performanceLevel);
-  }, [performanceLevel]);
 
-  const onPerformanceDecline = useCallback(() => {
-    if (performanceLevel === "high") {
-      setPerformanceLevel("medium");
-    } else if (performanceLevel === "medium") {
-      setPerformanceLevel("low");
-    }
-    console.log("Performance declined - downgraded to:", performanceLevel);
-  }, [performanceLevel]);
-
-  // Canvas style optimizations
-  const canvasStyle = useMemo(() => ({
-    background: "transparent",
-    willChange: "transform",
-    transform: "translateZ(0)",
-    backfaceVisibility: "hidden" as const,
-  }), []);
-
-  // Initialize performance level based on device
-  useEffect(() => {
-    if (isMobile) {
-      setPerformanceLevel("medium");
+    // Apply mobile optimizations
+    if (settings.isMobile) {
+      document.body.classList.add('mobile-optimized');
+      
+      // Reduce animation durations for mobile
+      root.style.setProperty('--animation-speed', settings.shouldReduceMotion ? '0s' : '0.15s');
+      
+      // Apply touch optimizations
+      document.body.style.touchAction = 'pan-y';
+      document.body.style.overscrollBehavior = 'none';
     } else {
-      setPerformanceLevel("high");
+      root.style.setProperty('--animation-speed', settings.shouldReduceMotion ? '0s' : '0.3s');
     }
-  }, [isMobile]);
 
-  return {
-    webglSettings,
-    webglCapabilities,
-    performanceLevel,
-    onWebGLCreated,
-    onPerformanceIncline,
-    onPerformanceDecline,
-    canvasStyle,
-    isMobile,
-  };
-}; 
+    // High refresh rate optimizations
+    if (settings.supportsHighRefreshRate) {
+      document.body.classList.add('high-refresh');
+      
+      // Force 120fps rendering
+      if (settings.targetFPS >= 120) {
+        const style = document.createElement('style');
+        style.textContent = `
+          * {
+            will-change: transform, opacity !important;
+            transform: translateZ(0) !important;
+          }
+          
+          @media (min-refresh-rate: 120hz) {
+            * {
+              animation-timing-function: linear !important;
+              transition-timing-function: linear !important;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+
+    // Quality-based optimizations
+    switch (settings.qualityLevel) {
+      case 'low':
+        root.style.setProperty('--blur-amount', '4px');
+        root.style.setProperty('--shadow-quality', 'none');
+        document.body.classList.add('quality-low');
+        break;
+      case 'medium':
+        root.style.setProperty('--blur-amount', '12px');
+        root.style.setProperty('--shadow-quality', 'medium');
+        document.body.classList.add('quality-medium');
+        break;
+      case 'high':
+        root.style.setProperty('--blur-amount', '20px');
+        root.style.setProperty('--shadow-quality', 'high');
+        document.body.classList.add('quality-high');
+        break;
+    }
+
+    // Performance monitoring
+    if (window.performance && window.performance.mark) {
+      window.performance.mark('performance-optimization-applied');
+    }
+  }, []);
+
+  // Frame rate monitoring
+  const monitorFrameRate = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    let frameCount = 0;
+    let lastTime = performance.now();
+    
+    const measureFrameRate = () => {
+      const currentTime = performance.now();
+      frameCount++;
+      
+      if (currentTime - lastTime >= 1000) {
+        const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+        
+        // Adjust quality if FPS is too low
+        if (fps < settings.targetFPS * 0.8) {
+          setSettings(prev => ({
+            ...prev,
+            qualityLevel: prev.qualityLevel === 'high' ? 'medium' : 'low'
+          }));
+        }
+        
+        frameCount = 0;
+        lastTime = currentTime;
+      }
+      
+      requestAnimationFrame(measureFrameRate);
+    };
+    
+    requestAnimationFrame(measureFrameRate);
+  }, [settings.targetFPS]);
+
+  useEffect(() => {
+    detectDeviceCapabilities();
+    
+    // Monitor performance in development
+    if (process.env.NODE_ENV === 'development') {
+      monitorFrameRate();
+    }
+
+    // Re-detect on orientation change (mobile)
+    const handleOrientationChange = () => {
+      setTimeout(detectDeviceCapabilities, 100);
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', handleOrientationChange);
+    };
+  }, [detectDeviceCapabilities, monitorFrameRate]);
+
+  return settings;
+}
+
+// Utility function to get optimal animation duration based on device
+export function getOptimalAnimationDuration(
+  baseMs: number,
+  settings: PerformanceSettings
+): number {
+  if (settings.shouldReduceMotion) return 0;
+  
+  if (settings.isMobile) {
+    return Math.max(baseMs * 0.5, 100); // Faster on mobile
+  }
+  
+  if (settings.supportsHighRefreshRate) {
+    return Math.max(baseMs * 0.75, 150); // Slightly faster for high refresh
+  }
+  
+  return baseMs;
+}
+
+// Utility function to check if expensive effects should be enabled
+export function shouldEnableExpensiveEffects(settings: PerformanceSettings): boolean {
+  return settings.qualityLevel !== 'low' && settings.shouldUseGPUAcceleration;
+} 
