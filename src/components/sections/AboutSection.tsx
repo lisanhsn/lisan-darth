@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import ImmersiveScrollContainer from "@/components/3d/ImmersiveScrollContainer";
+import AboutBackground3D from "@/components/3d/AboutBackground3D";
 import { useMobile } from "../../hooks/useMobile";
 
 export default function AboutSection() {
@@ -12,15 +13,16 @@ export default function AboutSection() {
   const isMobile = useMobile();
 
   useEffect(() => {
-    // Immediate display on mobile for faster loading
-    setIsVisible(isMobile ? true : inView);
-  }, [isMobile, inView]);
+    if (inView || isMobile) {
+      setIsVisible(true);
+    }
+  }, [inView, isMobile]);
 
   return (
     <section
       ref={ref}
       id="about"
-      className="relative min-h-screen py-10 sm:py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-space-dark via-space-medium to-black glass-section"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-imperial-gradient overflow-hidden glass-section"
       style={{
         willChange: "transform",
         transform: "translateZ(0)",
@@ -29,94 +31,136 @@ export default function AboutSection() {
     >
       {/* Glass Overlay */}
       <div className="glass-overlay" />
-      {/* Imperial Atmosphere Effects - Optimized for mobile */}
-      {!isMobile && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ willChange: "transform" }}
+
+      {/* Enhanced Imperial Atmosphere Effects - Now for ALL devices */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ willChange: "transform" }}
+      >
+        {/* Death Star - Visible on all devices */}
+        <motion.div
+          className={`absolute top-20 right-20 ${
+            isMobile ? "w-20 h-20" : "w-32 h-32"
+          } rounded-full opacity-20`}
+          style={{
+            background:
+              "radial-gradient(circle, #6b7280 0%, #374151 50%, #1f2937 70%, transparent 100%)",
+            filter: "blur(1px)",
+            border: "2px solid rgba(220, 38, 38, 0.3)",
+          }}
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 1.05, 1],
+            opacity: [0.15, 0.25, 0.15],
+          }}
+          transition={{ duration: isMobile ? 40 : 30, repeat: Infinity }}
         >
-          {/* Death Star */}
-          <motion.div
-            className="absolute top-20 right-20 w-32 h-32 rounded-full opacity-20"
+          {/* Death Star Laser */}
+          <div
+            className={`absolute top-2 left-2 ${
+              isMobile ? "w-2 h-2" : "w-3 h-3"
+            } rounded-full`}
             style={{
-              background:
-                "radial-gradient(circle, #6b7280 0%, #374151 50%, #1f2937 70%, transparent 100%)",
-              filter: "blur(1px)",
-              border: "2px solid rgba(220, 38, 38, 0.3)",
+              background: "radial-gradient(circle, #dc2626 0%, #991b1b 100%)",
+              boxShadow: "0 0 10px rgba(220, 38, 38, 0.8)",
             }}
-            animate={{
-              rotate: [0, 360],
-              scale: [1, 1.05, 1],
-              opacity: [0.15, 0.25, 0.15],
-            }}
-            transition={{ duration: 30, repeat: Infinity }}
-          >
-            {/* Death Star Laser */}
-            <div
-              className="absolute top-4 left-4 w-3 h-3 rounded-full"
-              style={{
-                background: "radial-gradient(circle, #dc2626 0%, #991b1b 100%)",
-                boxShadow: "0 0 10px rgba(220, 38, 38, 0.8)",
-              }}
-            />
-          </motion.div>
+          />
+        </motion.div>
 
-          {/* Imperial Star Destroyer Silhouette */}
+        {/* Imperial Star Destroyer Silhouette - Now on mobile too */}
+        <motion.div
+          className={`absolute top-40 ${
+            isMobile ? "left-10" : "left-20"
+          } opacity-10`}
+          animate={{
+            x: isMobile ? [-25, 25, -25] : [-50, 50, -50],
+            opacity: [0.05, 0.15, 0.05],
+          }}
+          transition={{ duration: isMobile ? 25 : 20, repeat: Infinity }}
+        >
+          <div
+            className={`${
+              isMobile ? "w-24 h-6" : "w-40 h-8"
+            } bg-gradient-to-r from-transparent via-imperial-gray to-transparent`}
+            style={{
+              clipPath: "polygon(0% 50%, 100% 20%, 100% 80%)",
+            }}
+          />
+        </motion.div>
+
+        {/* Enhanced Space Debris Particles - More on desktop, fewer on mobile */}
+        {Array.from({ length: isMobile ? 6 : 12 }).map((_, i) => (
           <motion.div
-            className="absolute top-40 left-20 opacity-10"
-            animate={{
-              x: [-50, 50, -50],
-              opacity: [0.05, 0.15, 0.05],
+            key={i}
+            className="absolute w-1 h-1 bg-imperial-blue rounded-full opacity-30"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              boxShadow: "0 0 4px rgba(30, 64, 175, 0.5)",
             }}
-            transition={{ duration: 20, repeat: Infinity }}
-          >
-            <div
-              className="w-40 h-8 bg-gradient-to-r from-transparent via-imperial-gray to-transparent"
-              style={{
-                clipPath: "polygon(0% 50%, 100% 20%, 100% 80%)",
-              }}
-            />
-          </motion.div>
+            animate={{
+              x: [0, isMobile ? 75 : 150, isMobile ? -25 : -50, 0],
+              y: [0, Math.random() * 30 - 15, 0],
+              opacity: [0, 0.4, 0.1, 0],
+              scale: [0.5, 1, 0.8, 0.5],
+            }}
+            transition={{
+              duration: isMobile ? 8 : 12 + Math.random() * 6,
+              repeat: Infinity,
+              delay: Math.random() * 8,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
 
-          {/* Space Debris Particles */}
-          {Array.from({ length: 12 }).map((_, i) => (
+        {/* Imperial Energy Field - Simplified for mobile */}
+        <motion.div
+          className="absolute inset-0 opacity-10"
+          animate={{
+            background: [
+              "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
+              "linear-gradient(180deg, transparent 0%, rgba(220, 38, 38, 0.03) 50%, transparent 100%)",
+              "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
+            ],
+          }}
+          transition={{ duration: isMobile ? 6 : 8, repeat: Infinity }}
+        />
+
+        {/* Mobile-specific enhancements */}
+        {isMobile && (
+          <>
+            {/* Simplified TIE Fighters */}
             <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-imperial-blue rounded-full opacity-30"
+              className="absolute top-1/4 right-10 w-3 h-2 bg-imperial-gray rounded-sm opacity-20"
+              animate={{
+                x: [100, -100],
+                y: [0, 20, -10, 0],
+                rotate: [0, 15, -15, 0],
+              }}
+              transition={{ duration: 12, repeat: Infinity, delay: 2 }}
+            >
+              <div className="absolute -left-1 top-0 w-1 h-2 bg-imperial-gray rounded-sm" />
+              <div className="absolute -right-1 top-0 w-1 h-2 bg-imperial-gray rounded-sm" />
+            </motion.div>
+
+            {/* Mobile Imperial Glow */}
+            <motion.div
+              className="absolute bottom-0 left-0 right-0 h-32 opacity-20"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                boxShadow: "0 0 4px rgba(30, 64, 175, 0.5)",
+                background:
+                  "linear-gradient(to top, rgba(220, 38, 38, 0.1) 0%, transparent 100%)",
               }}
               animate={{
-                x: [0, 150, -50, 0],
-                y: [0, Math.random() * 30 - 15, 0],
-                opacity: [0, 0.4, 0.1, 0],
-                scale: [0.5, 1, 0.8, 0.5],
+                opacity: [0.1, 0.3, 0.1],
               }}
-              transition={{
-                duration: 12 + Math.random() * 6,
-                repeat: Infinity,
-                delay: Math.random() * 8,
-                ease: "easeInOut",
-              }}
+              transition={{ duration: 4, repeat: Infinity }}
             />
-          ))}
+          </>
+        )}
+      </div>
 
-          {/* Imperial Energy Field */}
-          <motion.div
-            className="absolute inset-0 opacity-10"
-            animate={{
-              background: [
-                "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
-                "linear-gradient(180deg, transparent 0%, rgba(220, 38, 38, 0.03) 50%, transparent 100%)",
-                "linear-gradient(0deg, transparent 0%, rgba(30, 64, 175, 0.05) 50%, transparent 100%)",
-              ],
-            }}
-            transition={{ duration: 8, repeat: Infinity }}
-          />
-        </div>
-      )}
+      {/* 3D Background for Desktop */}
+      {!isMobile && <AboutBackground3D />}
 
       <ImmersiveScrollContainer
         className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12"
@@ -321,7 +365,7 @@ export default function AboutSection() {
               />
 
               {/* Profile Header */}
-              <div className="relative z-10 space-y-6">
+              <div className="text-center">
                 <div className="text-center">
                   <motion.div
                     className="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-imperial-gold bg-gradient-to-br from-space-dark to-imperial-blue flex items-center justify-center"
@@ -353,7 +397,7 @@ export default function AboutSection() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mt-6">
                   {[
                     { label: "Systems Built", value: "42+", icon: "🏗️" },
                     { label: "Planets Served", value: "7", icon: "🌍" },
@@ -383,7 +427,7 @@ export default function AboutSection() {
                 </div>
 
                 {/* Force Abilities */}
-                <div className="space-y-4">
+                <div className="mt-6">
                   <h4 className="text-lg font-orbitron font-bold text-imperial-gold">
                     Force Abilities
                   </h4>
@@ -419,7 +463,7 @@ export default function AboutSection() {
                           {skill.level}%
                         </span>
                       </div>
-                      <div className="w-full bg-space-dark rounded-full h-2">
+                      <div className="w-full bg-space-dark/50 rounded-full h-2 mb-3">
                         <motion.div
                           className={`h-2 rounded-full bg-${skill.color}`}
                           initial={{ width: 0 }}
@@ -464,44 +508,11 @@ export default function AboutSection() {
                 </motion.div>
               </div>
             </motion.div>
-
-            {/* Floating Imperial Elements */}
-            <motion.div
-              className="absolute -top-10 -right-10 w-16 h-16 opacity-30"
-              animate={{
-                rotate: [0, 360],
-                y: [0, -20, 0],
-                boxShadow: [
-                  "0 0 20px rgba(30, 64, 175, 0.3)",
-                  "0 0 30px rgba(220, 38, 38, 0.4)",
-                  "0 0 20px rgba(30, 64, 175, 0.3)",
-                ],
-              }}
-              transition={{ duration: 12, repeat: Infinity }}
-            >
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-imperial-blue to-imperial-red border border-imperial-gold/50" />
-            </motion.div>
-
-            <motion.div
-              className="absolute -bottom-8 -left-8 w-12 h-12 opacity-25"
-              animate={{
-                rotate: [360, 0],
-                x: [0, 15, 0],
-                boxShadow: [
-                  "0 0 15px rgba(212, 175, 55, 0.4)",
-                  "0 0 20px rgba(107, 114, 128, 0.3)",
-                  "0 0 15px rgba(212, 175, 55, 0.4)",
-                ],
-              }}
-              transition={{ duration: 8, repeat: Infinity }}
-            >
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-imperial-gold to-imperial-gray border border-imperial-blue/30" />
-            </motion.div>
           </motion.div>
         </div>
       </ImmersiveScrollContainer>
 
-      {/* Tatooine Landscape Silhouette */}
+      {/* Bottom Gradient Wave */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-32 opacity-30"
         style={{

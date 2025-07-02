@@ -62,72 +62,72 @@ const skillCategories = {
     ],
   },
   database: {
-    title: "Death Star Archives",
+    title: "Death Star Core",
     icon: Database,
-    color: "#991b1b",
-    description: "Data storage and management supremacy",
+    color: "#059669",
+    description: "Data management with imperial efficiency",
     skills: [
+      { name: "PostgreSQL", level: 90, icon: "🐘" },
       { name: "MongoDB", level: 85, icon: "🍃" },
-      { name: "PostgreSQL", level: 82, icon: "🐘" },
+      { name: "Redis", level: 82, icon: "🔴" },
       { name: "Firebase", level: 88, icon: "🔥" },
-      { name: "Redis", level: 78, icon: "💎" },
-      { name: "Prisma", level: 80, icon: "🔺" },
       { name: "Supabase", level: 85, icon: "⚡" },
+      { name: "MySQL", level: 80, icon: "🐬" },
     ],
   },
   cloud: {
-    title: "Galactic Network",
+    title: "Imperial Command",
     icon: Cloud,
-    color: "#059669",
-    description: "Cloud infrastructure and deployment mastery",
+    color: "#7c3aed",
+    description: "Cloud mastery across the galaxy",
     skills: [
-      { name: "AWS", level: 80, icon: "☁️" },
+      { name: "AWS", level: 88, icon: "☁️" },
+      { name: "Docker", level: 85, icon: "🐳" },
+      { name: "Kubernetes", level: 80, icon: "⚓" },
       { name: "Vercel", level: 92, icon: "▲" },
-      { name: "Docker", level: 78, icon: "🐋" },
-      { name: "Kubernetes", level: 72, icon: "☸️" },
-      { name: "Netlify", level: 85, icon: "🌐" },
-      { name: "GitHub Actions", level: 80, icon: "🎬" },
+      { name: "Netlify", level: 90, icon: "🌐" },
+      { name: "GitHub Actions", level: 85, icon: "🔄" },
     ],
   },
   tools: {
-    title: "Imperial Weapons",
-    icon: GitBranch,
-    color: "#7c3aed",
-    description: "Development tools and workflow mastery",
+    title: "Sith Arsenal",
+    icon: Shield,
+    color: "#ea580c",
+    description: "Development tools of mass construction",
     skills: [
-      { name: "Git", level: 92, icon: "🌿" },
       { name: "VS Code", level: 95, icon: "💻" },
+      { name: "Git", level: 92, icon: "🌳" },
       { name: "Figma", level: 85, icon: "🎨" },
       { name: "Postman", level: 88, icon: "📮" },
-      { name: "Jest", level: 80, icon: "🃏" },
-      { name: "Webpack", level: 75, icon: "📦" },
+      { name: "Jest", level: 80, icon: "🧪" },
+      { name: "Webpack", level: 78, icon: "📦" },
     ],
   },
 };
 
 export default function SkillsSection() {
-  const [activeCategory, setActiveCategory] =
-    useState<keyof typeof skillCategories>("frontend");
+  const [activeCategory, setActiveCategory] = useState("frontend");
   const { ref, inView } = useInView({ threshold: 0.1 });
   const isMobile = useMobile();
 
+  const currentCategory =
+    skillCategories[activeCategory as keyof typeof skillCategories];
+
   useEffect(() => {
-    // Disable auto-rotation on mobile for better performance
-    if (!isMobile && inView) {
-      const interval = setInterval(() => {
-        const categories = Object.keys(
-          skillCategories
-        ) as (keyof typeof skillCategories)[];
-        setActiveCategory((prev) => {
-          const currentIndex = categories.indexOf(prev);
-          return categories[(currentIndex + 1) % categories.length];
-        });
-      }, 5000);
+    if (inView || isMobile) {
+      const interval = setInterval(
+        () => {
+          const categories = Object.keys(skillCategories);
+          const currentIndex = categories.indexOf(activeCategory);
+          const nextIndex = (currentIndex + 1) % categories.length;
+          setActiveCategory(categories[nextIndex]);
+        },
+        isMobile ? 4000 : 3000
+      );
+
       return () => clearInterval(interval);
     }
-  }, [isMobile, inView]);
-
-  const currentCategory = skillCategories[activeCategory];
+  }, [activeCategory, inView, isMobile]);
 
   return (
     <section
@@ -142,53 +142,118 @@ export default function SkillsSection() {
     >
       {/* Glass Overlay */}
       <div className="glass-overlay" />
-      {/* 3D Background - Desktop only */}
-      {!isMobile && <SkillsBackground3D />}
 
-      {/* Simple Background Effect */}
+      {/* Enhanced Visual Effects for ALL devices */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-gradient-to-br from-imperial-red/5 via-transparent to-imperial-blue/5" />
+
+        {/* Animated skill nodes for mobile */}
+        {isMobile && (
+          <div className="absolute inset-0">
+            {/* CSS-only floating skill icons */}
+            <motion.div
+              className="absolute top-1/4 left-1/4 w-8 h-8 bg-imperial-red/20 rounded-full flex items-center justify-center"
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{ duration: 3, repeat: Infinity, delay: 0 }}
+            >
+              <Code2 size={16} className="text-imperial-red" />
+            </motion.div>
+
+            <motion.div
+              className="absolute top-1/3 right-1/3 w-6 h-6 bg-imperial-blue/20 rounded-full flex items-center justify-center"
+              animate={{
+                y: [0, 15, 0],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+            >
+              <Database size={12} className="text-imperial-blue" />
+            </motion.div>
+
+            <motion.div
+              className="absolute bottom-1/3 left-1/3 w-7 h-7 bg-imperial-gold/20 rounded-full flex items-center justify-center"
+              animate={{
+                y: [0, -10, 0],
+                opacity: [0.4, 0.7, 0.4],
+              }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: 2 }}
+            >
+              <Smartphone size={14} className="text-imperial-gold" />
+            </motion.div>
+
+            {/* More floating elements */}
+            <motion.div
+              className="absolute top-1/2 right-1/4 w-5 h-5 bg-green-500/20 rounded-full flex items-center justify-center"
+              animate={{
+                x: [0, 10, 0],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }}
+            >
+              <Cloud size={10} className="text-green-500" />
+            </motion.div>
+          </div>
+        )}
       </div>
+
+      {/* 3D Background for Desktop */}
+      {!isMobile && <SkillsBackground3D />}
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: isMobile ? 0 : 50 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
           transition={{
             duration: isMobile ? 0.3 : 0.8,
-            delay: isMobile ? 0 : 0.1,
+            delay: isMobile ? 0.1 : 0.2,
           }}
           style={{ willChange: "transform, opacity" }}
         >
-          <motion.h2
-            className="text-5xl md:text-6xl font-orbitron font-black text-imperial-red mb-6 holo-text"
-            initial={{ scale: isMobile ? 1 : 0.5 }}
-            animate={{ scale: 1 }}
+          <motion.div
+            className="inline-flex items-center space-x-3 glass-panel glass-red px-6 py-3 rounded-full mb-8 holo-panel"
+            initial={{ scale: isMobile ? 1 : 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             transition={{
-              duration: isMobile ? 0.3 : 0.8,
-              delay: isMobile ? 0.1 : 0.2,
-            }}
-            style={{ willChange: "transform" }}
-          >
-            LIGHTSABER TRAINING
-          </motion.h2>
-          <motion.p
-            className="text-xl text-imperial-gold max-w-3xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{
-              duration: isMobile ? 0.3 : 0.8,
+              duration: isMobile ? 0.3 : 0.6,
               delay: isMobile ? 0.2 : 0.4,
             }}
-            style={{ willChange: "opacity" }}
+            style={{ willChange: "transform, opacity" }}
           >
-            Witness the Force powers and technical abilities mastered through
-            years of dedicated training in the dark arts of development.
-          </motion.p>
+            <motion.div
+              className="w-3 h-3 bg-imperial-red rounded-full"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span className="text-imperial-red font-orbitron font-bold text-sm tracking-wider holo-text">
+              FORCE MASTERY
+            </span>
+          </motion.div>
 
-          {/* Simplified Lightsaber Indicator */}
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-white mb-6 leading-tight">
+            <span className="bg-gradient-to-r from-imperial-red via-imperial-gold to-imperial-red bg-clip-text text-transparent holo-text">
+              DARK SIDE
+            </span>
+            <br />
+            <span className="text-imperial-blue holo-text">ABILITIES</span>
+          </h2>
+
+          <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
+            "The ability to destroy a planet is insignificant next to the power
+            of{" "}
+            <span className="text-imperial-gold font-semibold">
+              modern development
+            </span>
+            ."
+          </p>
+
           <motion.div
             className="mt-8 flex justify-center"
             initial={{ opacity: 0 }}
@@ -226,60 +291,81 @@ export default function SkillsSection() {
             </h3>
 
             <div className="space-y-4">
-              {Object.entries(skillCategories).map(([key, category], index) => {
+              {Object.entries(skillCategories).map(([key, category]) => {
                 const IconComponent = category.icon;
                 const isActive = activeCategory === key;
 
                 return (
                   <motion.button
                     key={key}
-                    onClick={() =>
-                      setActiveCategory(key as keyof typeof skillCategories)
-                    }
-                    className={`w-full p-4 rounded-3xl border text-left transition-all duration-300 group glass-card ${
+                    onClick={() => setActiveCategory(key)}
+                    className={`w-full text-left p-6 rounded-2xl transition-all duration-300 glass-card border ${
                       isActive
-                        ? "glass-imperial border-imperial-red"
-                        : "border-imperial-gray hover:border-imperial-gold"
+                        ? "border-imperial-gold bg-imperial-gold/10"
+                        : "border-imperial-gray hover:border-imperial-blue hover:bg-imperial-blue/5"
                     }`}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : -30 }}
-                    transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: isMobile ? 1 : 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    style={{
+                      willChange: "transform",
+                      boxShadow: isActive
+                        ? `0 0 30px ${category.color}30`
+                        : "none",
+                    }}
                   >
                     <div className="flex items-center space-x-4">
-                      <div
-                        className={`p-3 rounded-3xl border ${
+                      <motion.div
+                        className={`p-3 rounded-xl bg-gradient-to-br ${
                           isActive
-                            ? "border-imperial-red bg-imperial-red bg-opacity-40"
-                            : "border-imperial-gray"
+                            ? "from-imperial-gold/20 to-imperial-red/20"
+                            : "from-imperial-blue/20 to-imperial-gray/20"
                         }`}
-                        style={{
-                          borderColor: isActive ? category.color : "#333333",
-                        }}
+                        animate={
+                          isActive
+                            ? {
+                                boxShadow: [
+                                  `0 0 20px ${category.color}40`,
+                                  `0 0 30px ${category.color}60`,
+                                  `0 0 20px ${category.color}40`,
+                                ],
+                              }
+                            : {}
+                        }
+                        transition={{ duration: 2, repeat: Infinity }}
                       >
                         <IconComponent
-                          className="w-6 h-6"
+                          size={24}
                           style={{ color: category.color }}
                         />
-                      </div>
+                      </motion.div>
+
                       <div className="flex-1">
-                        <h4 className="text-imperial-white font-orbitron font-bold mb-1">
+                        <h4
+                          className={`text-xl font-orbitron font-bold ${
+                            isActive
+                              ? "text-imperial-gold"
+                              : "text-imperial-white"
+                          }`}
+                        >
                           {category.title}
                         </h4>
-                        <p className="text-imperial-white text-sm opacity-80">
+                        <p className="text-sm text-text-secondary mt-1">
                           {category.description}
                         </p>
                       </div>
-                    </div>
 
-                    {isActive && (
-                      <motion.div
-                        className="absolute left-0 top-0 bottom-0 w-1 rounded-r-lg"
-                        style={{ backgroundColor: category.color }}
-                        layoutId="activeCategoryIndicator"
-                      />
-                    )}
+                      {isActive && (
+                        <motion.div
+                          className="w-3 h-3 rounded-full bg-imperial-gold"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.7, 1, 0.7],
+                          }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          style={{ willChange: "transform, opacity" }}
+                        />
+                      )}
+                    </div>
                   </motion.button>
                 );
               })}
@@ -288,26 +374,46 @@ export default function SkillsSection() {
 
           {/* Skills Display */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : 50 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            key={activeCategory}
+            initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: isMobile ? 0.2 : 0.5,
+              delay: isMobile ? 0.1 : 0.2,
+            }}
+            style={{ willChange: "transform, opacity" }}
           >
-            <motion.div
-              key={activeCategory}
-              className="glass-panel glass-imperial rounded-3xl p-8 holo-panel"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div className="glass-panel glass-imperial rounded-3xl p-8 border border-imperial-gray/30 holo-panel">
+              {/* Category Header */}
               <div className="text-center mb-8">
-                <currentCategory.icon
-                  className="w-16 h-16 mx-auto mb-4"
+                <motion.div
+                  className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+                  style={{
+                    background: `linear-gradient(135deg, ${currentCategory.color}20, ${currentCategory.color}10)`,
+                    border: `2px solid ${currentCategory.color}40`,
+                  }}
+                  animate={{
+                    boxShadow: [
+                      `0 0 20px ${currentCategory.color}30`,
+                      `0 0 40px ${currentCategory.color}50`,
+                      `0 0 20px ${currentCategory.color}30`,
+                    ],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <currentCategory.icon
+                    size={32}
+                    style={{ color: currentCategory.color }}
+                  />
+                </motion.div>
+
+                <h4
+                  className="text-2xl font-orbitron font-bold text-imperial-white mb-2"
                   style={{ color: currentCategory.color }}
-                />
-                <h3 className="text-2xl font-orbitron font-bold text-imperial-white mb-2">
+                >
                   {currentCategory.title}
-                </h3>
-                <p className="text-imperial-gold">
+                </h4>
+                <p className="text-text-secondary">
                   {currentCategory.description}
                 </p>
               </div>
@@ -321,7 +427,8 @@ export default function SkillsSection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: isMobile ? 1 : 1.02 }}
+                    style={{ willChange: "transform" }}
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
@@ -352,43 +459,22 @@ export default function SkillsSection() {
                 ))}
               </div>
 
-              {/* Category Stats */}
+              {/* Category Footer */}
               <motion.div
-                className="mt-8 grid grid-cols-3 gap-4 text-center"
+                className="text-center mt-8 pt-6 border-t border-imperial-gray/30"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
+                transition={{ delay: 0.8 }}
               >
-                <div className="glass-panel glass-imperial rounded-3xl p-3">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
-                    {currentCategory.skills.length}
-                  </div>
-                  <div className="text-xs text-imperial-gold">SKILLS</div>
-                </div>
-                <div className="glass-panel glass-imperial rounded-3xl p-3">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
-                    {Math.round(
-                      currentCategory.skills.reduce(
-                        (acc, skill) => acc + skill.level,
-                        0
-                      ) / currentCategory.skills.length
-                    )}
-                    %
-                  </div>
-                  <div className="text-xs text-imperial-gold">MASTERY</div>
-                </div>
-                <div className="glass-panel glass-imperial rounded-3xl p-3">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
-                    {Math.max(...currentCategory.skills.map((s) => s.level))}%
-                  </div>
-                  <div className="text-xs text-imperial-gold">PEAK</div>
-                </div>
+                <p className="text-sm text-text-secondary italic">
+                  "Power! Unlimited power!" - Emperor Palpatine
+                </p>
               </motion.div>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Force Mastery Quote */}
+        {/* Vader Quote */}
         <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
