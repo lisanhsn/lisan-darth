@@ -11,12 +11,40 @@ import ImperialFooter from "@/components/ImperialFooter";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Darth Lisan Portfolio</h1>
-        <p className="text-xl">Dark Side Developer</p>
-        <p className="mt-4 text-gray-400">Site is loading...</p>
+    <main className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      {/* Fixed Glassy Navigation */}
+      <Navigation />
+
+      {/* Scrollable Content */}
+      <div className="relative">
+        {/* Hero Section */}
+        <section id="home" className="min-h-screen pt-20">
+          <HeroSection />
+        </section>
+
+        {/* About Section */}
+        <section id="about" className="min-h-screen">
+          <AboutSection />
+        </section>
+
+        {/* Skills Section */}
+        <section id="skills" className="min-h-screen">
+          <SkillsSection />
+        </section>
+
+        {/* Projects Section */}
+        <section id="projects" className="min-h-screen">
+          <ProjectsSection />
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="min-h-screen">
+          <ContactSection />
+        </section>
+
+        {/* Footer */}
+        <ImperialFooter />
       </div>
-    </div>
+    </main>
   );
 }
