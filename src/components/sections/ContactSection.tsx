@@ -113,8 +113,11 @@ export default function ContactSection() {
     <section
       ref={ref}
       id="contact"
-      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-imperial-gradient overflow-hidden"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-imperial-gradient overflow-hidden glass-section"
     >
+      {/* Glass Overlay */}
+      <div className="glass-overlay" />
+
       {/* 3D Background */}
       <ContactBackground3D />
 
@@ -123,7 +126,7 @@ export default function ContactSection() {
         {Array.from({ length: 8 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute"
+            className="absolute glass-float"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -146,13 +149,13 @@ export default function ContactSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-8 sm:mb-12 lg:mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16 glass-panel glass-imperial p-8 rounded-3xl"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
           transition={{ duration: 0.8 }}
         >
           <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-red mb-4 sm:mb-6 sith-text heading-imperial"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-red mb-4 sm:mb-6 sith-text heading-imperial holo-text"
             initial={{ scale: 0.5 }}
             animate={{ scale: inView ? 1 : 0.5 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -176,8 +179,9 @@ export default function ContactSection() {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : -50 }}
             transition={{ duration: 0.8, delay: 0.6 }}
+            className="glass-card glass-imperial p-6 rounded-3xl"
           >
-            <h3 className="text-2xl sm:text-3xl font-orbitron font-bold text-imperial-gold mb-6 sm:mb-8 heading-imperial gold-glow">
+            <h3 className="text-2xl sm:text-3xl font-orbitron font-bold text-imperial-gold mb-6 sm:mb-8 heading-imperial gold-glow holo-text">
               COMMUNICATION CHANNELS
             </h3>
 
@@ -196,24 +200,30 @@ export default function ContactSection() {
                         ? "noopener noreferrer"
                         : undefined
                     }
-                    className="block bg-space-medium bg-opacity-80 border border-imperial-gray rounded-3xl p-6 hover:border-imperial-red transition-all duration-300 group force-field"
+                    className="block glass-card p-6 rounded-3xl hover:glass-gold transition-all duration-300 group holo-panel"
                     initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 30 }}
-                    transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
+                    animate={{
+                      opacity: inView ? 1 : 0,
+                      y: inView ? 0 : 30,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.8 + index * 0.1,
+                    }}
                     whileHover={{ scale: 1.02 }}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className="p-3 bg-imperial-red bg-opacity-20 border border-imperial-red rounded-3xl group-hover:bg-imperial-red group-hover:bg-opacity-40 transition-all duration-300">
-                        <IconComponent className="w-6 h-6 text-imperial-red" />
+                      <div className="glass-panel glass-imperial p-3 rounded-2xl group-hover:glass-gold transition-all duration-300">
+                        <IconComponent className="w-6 h-6 text-imperial-red group-hover:text-imperial-gold transition-colors duration-300" />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="text-imperial-white font-orbitron font-bold mb-1">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-lg font-orbitron font-bold text-imperial-gold mb-1 holo-text">
                           {method.label}
                         </h4>
-                        <p className="text-imperial-gold font-mono text-sm mb-2">
+                        <p className="text-imperial-white text-sm sm:text-base break-all">
                           {method.value}
                         </p>
-                        <p className="text-imperial-white text-sm opacity-80">
+                        <p className="text-imperial-gold text-xs opacity-80 mt-1">
                           {method.description}
                         </p>
                       </div>
@@ -223,35 +233,23 @@ export default function ContactSection() {
               })}
             </div>
 
-            {/* Imperial Network Status */}
+            {/* Imperial Warning */}
             <motion.div
-              className="mt-8 sm:mt-12 bg-imperial-black bg-opacity-50 border border-green-500 rounded-3xl p-4 sm:p-6"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: inView ? 1 : 0, scale: inView ? 1 : 0.9 }}
+              className="mt-8 glass-panel glass-imperial p-4 rounded-2xl border border-imperial-red"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: inView ? 1 : 0 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
-              <div className="flex items-center space-x-3 mb-4">
-                <motion.div
-                  className="w-3 h-3 bg-green-500 rounded-full"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <span className="text-green-500 font-orbitron font-bold">
-                  IMPERIAL NETWORK STATUS: ONLINE
-                </span>
-              </div>
-              <div className="space-y-2 text-sm text-imperial-white">
-                <div className="flex justify-between">
-                  <span>Communication Array:</span>
-                  <span className="text-green-500">OPERATIONAL</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Encryption Level:</span>
-                  <span className="text-imperial-gold">MAXIMUM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Response Time:</span>
-                  <span className="text-imperial-blue">0.001 PARSECS</span>
+              <div className="flex items-center space-x-3">
+                <AlertTriangle className="w-5 h-5 text-imperial-red" />
+                <div>
+                  <h4 className="text-imperial-red font-orbitron font-bold text-sm holo-text">
+                    IMPERIAL SECURITY NOTICE
+                  </h4>
+                  <p className="text-imperial-white text-xs opacity-80">
+                    All transmissions are monitored and encrypted by Imperial
+                    Intelligence
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -264,10 +262,10 @@ export default function ContactSection() {
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             {!submitted ? (
-              <div className="bg-imperial-black bg-opacity-50 border border-imperial-red rounded-3xl p-4 sm:p-6 lg:p-8 force-field">
+              <div className="glass-panel glass-imperial rounded-3xl p-4 sm:p-6 lg:p-8 holo-panel">
                 <div className="flex items-center space-x-3 mb-4 sm:mb-6">
                   <Shield className="w-6 h-6 text-imperial-red" />
-                  <h3 className="text-2xl font-orbitron font-bold text-imperial-white">
+                  <h3 className="text-2xl font-orbitron font-bold text-imperial-white holo-text">
                     SECURE TRANSMISSION
                   </h3>
                 </div>
@@ -308,73 +306,81 @@ export default function ContactSection() {
 
                   {/* Name Field */}
                   <div>
-                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2">
+                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2 holo-text">
                       OPERATIVE NAME
                     </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-space-medium bg-opacity-90 border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:bg-imperial-black focus:bg-opacity-95 focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none transition-all duration-300"
-                      placeholder="Enter your designation..."
-                    />
+                    <div className="glass-panel glass-imperial p-1 rounded-2xl">
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 bg-transparent border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none transition-all duration-300 glass-btn"
+                        placeholder="Enter your designation..."
+                      />
+                    </div>
                   </div>
 
                   {/* Email Field */}
                   <div>
-                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2">
+                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2 holo-text">
                       TRANSMISSION FREQUENCY
                     </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-space-medium bg-opacity-90 border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:bg-imperial-black focus:bg-opacity-95 focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none transition-all duration-300"
-                      placeholder="operative@empire.gov"
-                    />
+                    <div className="glass-panel glass-imperial p-1 rounded-2xl">
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 bg-transparent border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none transition-all duration-300 glass-btn"
+                        placeholder="operative@empire.gov"
+                      />
+                    </div>
                   </div>
 
                   {/* Subject Field */}
                   <div>
-                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2">
+                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2 holo-text">
                       MISSION SUBJECT
                     </label>
-                    <input
-                      type="text"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-space-medium bg-opacity-90 border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:bg-imperial-black focus:bg-opacity-95 focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none transition-all duration-300"
-                      placeholder="Brief subject of transmission..."
-                    />
+                    <div className="glass-panel glass-imperial p-1 rounded-2xl">
+                      <input
+                        type="text"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 bg-transparent border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none transition-all duration-300 glass-btn"
+                        placeholder="Brief subject of transmission..."
+                      />
+                    </div>
                   </div>
 
                   {/* Message Field */}
                   <div>
-                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2">
+                    <label className="block text-imperial-gold font-orbitron text-sm font-bold mb-2 holo-text">
                       ENCRYPTED MESSAGE
                     </label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      rows={6}
-                      className="w-full px-4 py-3 bg-space-medium bg-opacity-90 border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:bg-imperial-black focus:bg-opacity-95 focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none resize-none transition-all duration-300"
-                      placeholder="Your message to the Dark Lord... Choose your words carefully."
-                    />
+                    <div className="glass-panel glass-imperial p-1 rounded-2xl">
+                      <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        required
+                        rows={6}
+                        className="w-full px-4 py-3 bg-transparent border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none resize-none transition-all duration-300 glass-btn"
+                        placeholder="Your message to the Dark Lord... Choose your words carefully."
+                      />
+                    </div>
                   </div>
 
                   {/* Submit Button */}
                   <motion.button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full imperial-button px-6 py-4 rounded-2xl font-orbitron font-bold text-imperial-white hover:text-imperial-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full glass-btn glass-imperial px-6 py-4 rounded-2xl font-orbitron font-bold text-imperial-white hover:text-imperial-gold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-imperial-red hover:glass-gold"
                     whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                     whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
                   >

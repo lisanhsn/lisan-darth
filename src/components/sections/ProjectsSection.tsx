@@ -89,16 +89,16 @@ export default function ProjectsSection() {
     index: number;
   }) => (
     <motion.div
-      className="bg-space-medium bg-opacity-80 border border-imperial-gray rounded-3xl p-4 sm:p-6 hover:border-imperial-red transition-all duration-300 group force-field h-full"
+      className="glass-card glass-imperial p-4 sm:p-6 hover:glass-gold transition-all duration-300 group h-full holo-panel"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ scale: 1.02, borderColor: "#dc2626" }}
+      whileHover={{ scale: 1.02 }}
     >
       {/* Project Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <h3 className="text-xl font-orbitron font-bold text-text-primary mb-2 group-hover:text-imperial-gold transition-colors heading-imperial">
+          <h3 className="text-xl font-orbitron font-bold text-text-primary mb-2 group-hover:text-imperial-gold transition-colors heading-imperial holo-text">
             {project.name.replace(/-/g, " ").toUpperCase()}
           </h3>
           <p className="text-text-secondary text-sm opacity-90 leading-relaxed text-readable">
@@ -110,7 +110,7 @@ export default function ProjectsSection() {
             href={project.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 bg-imperial-red bg-opacity-20 border border-imperial-red rounded-2xl hover:bg-imperial-red hover:bg-opacity-40 transition-all duration-300"
+            className="p-2 glass-panel glass-imperial rounded-2xl hover:glass-gold transition-all duration-300"
           >
             <Github className="w-4 h-4 text-imperial-red" />
           </a>
@@ -119,7 +119,7 @@ export default function ProjectsSection() {
               href={project.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 bg-imperial-gold bg-opacity-20 border border-imperial-gold rounded-2xl hover:bg-imperial-gold hover:bg-opacity-40 transition-all duration-300"
+              className="p-2 glass-panel glass-gold rounded-2xl hover:scale-110 transition-all duration-300"
             >
               <ExternalLink className="w-4 h-4 text-imperial-gold" />
             </a>
@@ -129,13 +129,13 @@ export default function ProjectsSection() {
 
       {/* Project Stats */}
       <div className="flex items-center space-x-4 mb-4 text-sm">
-        <div className="flex items-center space-x-1 text-imperial-gold">
+        <div className="flex items-center space-x-1 text-imperial-gold glass-btn px-2 py-1 rounded-full">
           <Star className="w-4 h-4" />
-          <span>{project.stargazers_count}</span>
+          <span className="holo-text">{project.stargazers_count}</span>
         </div>
-        <div className="flex items-center space-x-1 text-energy-blue">
+        <div className="flex items-center space-x-1 text-energy-blue glass-btn px-2 py-1 rounded-full">
           <GitFork className="w-4 h-4" />
-          <span>{project.forks_count}</span>
+          <span className="holo-text">{project.forks_count}</span>
         </div>
         <div className="flex items-center space-x-1 text-text-muted">
           <Calendar className="w-4 h-4" />
@@ -147,7 +147,7 @@ export default function ProjectsSection() {
       {project.language && (
         <div className="mb-4">
           <span
-            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border"
+            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium glass-panel border holo-text"
             style={{
               backgroundColor: `${getLanguageColor(project.language)}20`,
               borderColor: getLanguageColor(project.language),
@@ -167,13 +167,13 @@ export default function ProjectsSection() {
             {project.topics.slice(0, 4).map((topic) => (
               <span
                 key={topic}
-                className="px-2 py-1 bg-imperial-gray bg-opacity-50 border border-imperial-gray-light rounded-2xl text-xs text-text-secondary"
+                className="px-2 py-1 glass-panel glass-imperial rounded-2xl text-xs text-text-secondary"
               >
                 {topic}
               </span>
             ))}
             {project.topics.length > 4 && (
-              <span className="px-2 py-1 text-xs text-imperial-gold">
+              <span className="px-2 py-1 text-xs text-imperial-gold holo-text">
                 +{project.topics.length - 4} more
               </span>
             )}
@@ -182,14 +182,14 @@ export default function ProjectsSection() {
       )}
 
       {/* Imperial Classification */}
-      <div className="border-t border-imperial-gray pt-4">
+      <div className="border-t border-imperial-gray pt-4 glass-panel glass-imperial p-2 rounded-lg">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-imperial-red font-orbitron font-bold heading-imperial">
+          <span className="text-xs text-imperial-red font-orbitron font-bold heading-imperial holo-text">
             IMPERIAL CLASSIFIED
           </span>
           <div className="flex items-center space-x-1">
             <Eye className="w-3 h-3 text-imperial-gold" />
-            <span className="text-xs text-imperial-gold">
+            <span className="text-xs text-imperial-gold holo-text">
               CLEARANCE LEVEL: {Math.floor(Math.random() * 10) + 1}
             </span>
           </div>
@@ -202,8 +202,10 @@ export default function ProjectsSection() {
     <section
       ref={ref}
       id="projects"
-      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-space-gradient overflow-hidden"
+      className="relative min-h-screen py-10 sm:py-16 lg:py-20 bg-space-gradient overflow-hidden glass-section"
     >
+      {/* Glass Overlay */}
+      <div className="glass-overlay" />
       {/* 3D Background */}
       <ProjectsBackground3D />
 
@@ -242,7 +244,7 @@ export default function ProjectsSection() {
           transition={{ duration: 0.8 }}
         >
           <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-red mb-4 sm:mb-6 sith-text"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-imperial-red mb-4 sm:mb-6 sith-text holo-text"
             initial={{ scale: 0.5 }}
             animate={{ scale: inView ? 1 : 0.5 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -267,24 +269,24 @@ export default function ProjectsSection() {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             {/* Search */}
-            <div className="relative">
+            <div className="relative glass-panel glass-imperial p-1 rounded-2xl">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-imperial-gold" />
               <input
                 type="text"
                 placeholder="Search Imperial archives..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-space-medium bg-opacity-90 border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:bg-imperial-black focus:bg-opacity-95 focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none w-64"
+                className="pl-10 pr-4 py-2 bg-transparent border-2 border-imperial-gray rounded-2xl text-imperial-white placeholder-imperial-gold placeholder-opacity-70 focus:border-imperial-red focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none w-64 glass-btn"
               />
             </div>
 
             {/* Language Filter */}
-            <div className="relative">
+            <div className="relative glass-panel glass-imperial p-1 rounded-2xl">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-imperial-gold" />
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-space-medium bg-opacity-90 border-2 border-imperial-gray rounded-2xl text-imperial-white focus:border-imperial-red focus:bg-imperial-black focus:bg-opacity-95 focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none appearance-none cursor-pointer"
+                className="pl-10 pr-8 py-2 bg-transparent border-2 border-imperial-gray rounded-2xl text-imperial-white focus:border-imperial-red focus:ring-2 focus:ring-imperial-red focus:ring-opacity-25 focus:outline-none appearance-none cursor-pointer glass-btn"
               >
                 {languages.map((language) => (
                   <option

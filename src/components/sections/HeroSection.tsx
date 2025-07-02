@@ -80,12 +80,32 @@ export default function HeroSection() {
       {/* 3D Canvas Background - Simplified on mobile */}
       {!isMobile && (
         <div className="absolute inset-0 opacity-30">
-          <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
+          <Canvas
+            camera={{ position: [0, 0, 10], fov: 60 }}
+            gl={{
+              antialias: true,
+              alpha: true,
+              powerPreference: "high-performance",
+              precision: "highp",
+            }}
+            style={{
+              background: "transparent",
+              willChange: "transform",
+              transform: "translateZ(0)",
+            }}
+            frameloop="demand"
+            performance={{ min: 0.5 }}
+            onCreated={({ gl }) => {
+              gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+              gl.outputEncoding = 3001; // sRGBEncoding
+              gl.toneMapping = 4; // ACESFilmicToneMapping
+            }}
+          >
             <Suspense fallback={null}>
               <Stars
                 radius={300}
                 depth={60}
-                count={500}
+                count={1000}
                 factor={4}
                 saturation={0.1}
                 fade={true}
@@ -99,11 +119,18 @@ export default function HeroSection() {
               <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
 
               <ambientLight intensity={0.3} />
-              <pointLight position={[10, 10, 10]} intensity={0.5} />
+              <pointLight
+                position={[10, 10, 10]}
+                intensity={0.5}
+                distance={40}
+                decay={2}
+              />
               <pointLight
                 position={[-10, -10, 5]}
                 intensity={0.3}
                 color="#ff6b35"
+                distance={30}
+                decay={2}
               />
             </Suspense>
           </Canvas>
@@ -295,7 +322,7 @@ export default function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Right Column - 3D Darth Vader */}
+        {/* Right Column - Darth Vader Character */}
         <motion.div
           className="relative h-96 lg:h-[600px] flex items-center justify-center"
           initial={{ opacity: 0, scale: isMobile ? 1 : 0.8 }}
@@ -315,42 +342,113 @@ export default function HeroSection() {
 
           {!isMobile ? (
             <div className="w-full h-full relative">
-              <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-                <Suspense fallback={null}>
-                  <ambientLight intensity={0.4} />
-                  <pointLight position={[10, 10, 10]} intensity={0.8} />
-                  <pointLight
-                    position={[-10, -10, 5]}
-                    intensity={0.4}
-                    color="#ff6b35"
-                  />
+              {/* Enhanced SVG Darth Vader for desktop */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <EnhancedSVGDarthVader
+                  mousePosition={mousePosition}
+                  className="w-full h-full max-w-md"
+                  isInteracting={isInteracting}
+                  onClick={() => setIsInteracting(!isInteracting)}
+                />
+              </div>
 
-                  {/* Conditional 3D content based on device */}
-                  <Float speed={1} rotationIntensity={0.5} floatIntensity={0.5}>
-                    <DarthVaderHelmet position={[0, 0, 0]} scale={1.5} />
-                  </Float>
+              {/* 3D Helmet floating in background */}
+              <div className="absolute inset-0 opacity-40 pointer-events-none">
+                <Canvas
+                  camera={{ position: [3, 3, 8], fov: 50 }}
+                  gl={{
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: "high-performance",
+                    precision: "highp",
+                  }}
+                  style={{
+                    background: "transparent",
+                    willChange: "transform",
+                    transform: "translateZ(0)",
+                  }}
+                  frameloop="demand"
+                  performance={{ min: 0.5 }}
+                  onCreated={({ gl }) => {
+                    gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                    gl.outputEncoding = 3001; // sRGBEncoding
+                    gl.toneMapping = 4; // ACESFilmicToneMapping
+                  }}
+                >
+                  <Suspense fallback={null}>
+                    <ambientLight intensity={0.3} />
+                    <pointLight
+                      position={[10, 10, 10]}
+                      intensity={0.6}
+                      distance={30}
+                      decay={2}
+                    />
+                    <pointLight
+                      position={[-10, -10, 5]}
+                      intensity={0.3}
+                      color="#ff6b35"
+                      distance={25}
+                      decay={2}
+                    />
 
-                  <OrbitControls
-                    enableZoom={false}
-                    enablePan={false}
-                    autoRotate
-                    autoRotateSpeed={0.5}
-                    onStart={() => setIsInteracting(true)}
-                    onEnd={() => setIsInteracting(false)}
-                  />
-                </Suspense>
-              </Canvas>
+                    <Float
+                      speed={0.5}
+                      rotationIntensity={0.2}
+                      floatIntensity={0.3}
+                    >
+                      <DarthVaderHelmet position={[2, 1, -2]} scale={0.8} />
+                    </Float>
+                  </Suspense>
+                </Canvas>
+              </div>
 
               {/* Interactive UI Overlay */}
               <div className="absolute bottom-4 left-4 right-4 text-center glass-panel glass-imperial p-3 rounded-2xl">
-                <p className="text-imperial-gold text-sm font-orbitron">
-                  Click and drag to feel the Force
+                <p className="text-imperial-gold text-sm font-orbitron holo-text">
+                  The Dark Lord awaits your command
                 </p>
               </div>
             </div>
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <EnhancedSVGDarthVader className="w-64 h-64 sm:w-80 sm:h-80" />
+            /* Mobile Darth Vader Character */
+            <div className="w-full h-full relative flex items-center justify-center">
+              <motion.div
+                className="relative z-10"
+                animate={{
+                  scale: [1, 1.02, 1],
+                  rotateY: [0, 2, -2, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <SVGDarthVader className="w-72 h-80 drop-shadow-2xl" />
+              </motion.div>
+
+              {/* Mobile breathing effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-imperial-red/10 via-transparent to-imperial-red/10 rounded-3xl"
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+
+              {/* Imperial symbol overlay */}
+              <motion.div
+                className="absolute top-4 right-4 w-12 h-12 glass-panel glass-imperial rounded-full flex items-center justify-center"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                <div className="w-6 h-6 bg-imperial-gold rounded-full opacity-80" />
+              </motion.div>
             </div>
           )}
         </motion.div>

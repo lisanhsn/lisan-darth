@@ -223,7 +223,24 @@ export default function SkillsBackground3D() {
     <div className="absolute inset-0 opacity-12">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 65 }}
-        style={{ background: "transparent" }}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+          precision: "highp",
+        }}
+        style={{
+          background: "transparent",
+          willChange: "transform",
+          transform: "translateZ(0)",
+        }}
+        frameloop="demand"
+        performance={{ min: 0.5 }}
+        onCreated={({ gl }) => {
+          gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          gl.outputEncoding = 3001; // sRGBEncoding
+          gl.toneMapping = 4; // ACESFilmicToneMapping
+        }}
       >
         <ambientLight intensity={0.08} color="#1a1a1a" />
         <directionalLight

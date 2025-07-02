@@ -1,9 +1,17 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Group, Vector3 } from "three";
+import {
+  Group,
+  Vector3,
+  ConeGeometry,
+  BoxGeometry,
+  SphereGeometry,
+  CylinderGeometry,
+} from "three";
 import { Float } from "@react-three/drei";
+import * as THREE from "three";
 
 interface FlyingSpaceshipProps {
   delay?: number;
@@ -23,6 +31,128 @@ export default function FlyingSpaceship({
   const [boostActive, setBoostActive] = useState(false);
   const [glowColor, setGlowColor] = useState("#ff6b35");
 
+  // WebGL-optimized geometries (reuse instances)
+  const geometries = useMemo(
+    () => ({
+      hull: new ConeGeometry(0.3, 1.2, 8),
+      wing: new BoxGeometry(0.8, 0.05, 0.4),
+      cockpit: new SphereGeometry(0.15, 8, 8),
+      engine: new CylinderGeometry(0.05, 0.08, 0.2, 8),
+      flame: new ConeGeometry(0.04, 0.3, 6),
+      boostFlame: new ConeGeometry(0.04, 0.8, 6),
+      trail: new SphereGeometry(0.1, 8, 8),
+    }),
+    []
+  );
+
+  // WebGL-optimized materials with proper settings
+  const materials = useMemo(() => {
+    const brightColors = [
+      "#ff6b35",
+      "#00d4ff",
+      "#ff3366",
+      "#33ff66",
+      "#9966ff",
+      "#ffff33",
+      "#ff3399",
+      "#66ffff",
+      "#ff9933",
+      "#33ff99",
+      "#ff6666",
+      "#6666ff",
+    ];
+
+    return {
+      hull: {
+        normal: new THREE.MeshStandardMaterial({
+          color: "#2d3748",
+          metalness: 0.8,
+          roughness: 0.2,
+          transparent: false,
+        }),
+        boost: new THREE.MeshStandardMaterial({
+          color: "#4a5568",
+          metalness: 0.8,
+          roughness: 0.2,
+          emissive: new THREE.Color(glowColor),
+          emissiveIntensity: 0.3,
+          transparent: false,
+        }),
+      },
+      wing: {
+        normal: new THREE.MeshStandardMaterial({
+          color: "#c53030",
+          metalness: 0.6,
+          roughness: 0.3,
+          transparent: false,
+        }),
+        boost: new THREE.MeshStandardMaterial({
+          color: "#e53e3e",
+          metalness: 0.6,
+          roughness: 0.3,
+          emissive: new THREE.Color(glowColor),
+          emissiveIntensity: 0.4,
+          transparent: false,
+        }),
+      },
+      cockpit: {
+        normal: new THREE.MeshStandardMaterial({
+          color: "#0078d4",
+          emissive: "#0078d4",
+          emissiveIntensity: 0.3,
+          transparent: true,
+          opacity: 0.8,
+        }),
+        boost: new THREE.MeshStandardMaterial({
+          color: glowColor,
+          emissive: glowColor,
+          emissiveIntensity: 1.2,
+          transparent: true,
+          opacity: 0.8,
+        }),
+      },
+      engine: new THREE.MeshStandardMaterial({
+        color: "#1a202c",
+        transparent: false,
+      }),
+      flame: {
+        normal: new THREE.MeshStandardMaterial({
+          color: "#3182ce",
+          emissive: "#3182ce",
+          emissiveIntensity: 0.8,
+          transparent: true,
+          opacity: 0.9,
+          depthWrite: false,
+        }),
+        boost: new THREE.MeshStandardMaterial({
+          color: glowColor,
+          emissive: glowColor,
+          emissiveIntensity: 2.0,
+          transparent: true,
+          opacity: 0.9,
+          depthWrite: false,
+        }),
+      },
+      trail: new THREE.MeshStandardMaterial({
+        color: glowColor,
+        emissive: glowColor,
+        emissiveIntensity: 1.5,
+        transparent: true,
+        opacity: 0.6,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      }),
+      brightColors,
+    };
+  }, [glowColor, geometries]);
+
+  // Generate random bright glow color
+  const generateRandomGlowColor = () => {
+    return materials.brightColors[
+      Math.floor(Math.random() * materials.brightColors.length)
+    ];
+  };
+
   // Activate after delay
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -32,67 +162,60 @@ export default function FlyingSpaceship({
     return () => clearTimeout(timer);
   }, [delay]);
 
-  // Generate random bright glow color
-  const generateRandomGlowColor = () => {
-    const brightColors = [
-      "#ff6b35", // Orange
-      "#00d4ff", // Cyan
-      "#ff3366", // Pink
-      "#33ff66", // Green
-      "#9966ff", // Purple
-      "#ffff33", // Yellow
-      "#ff3399", // Magenta
-      "#66ffff", // Light Blue
-      "#ff9933", // Amber
-      "#33ff99", // Mint
-      "#ff6666", // Light Red
-      "#6666ff", // Light Purple
-    ];
-    return brightColors[Math.floor(Math.random() * brightColors.length)];
-  };
-
-  // Boost activation
+  // Boost activation with WebGL-optimized color updates
   useEffect(() => {
     if (!isActive || !boostMode) return;
 
     const boostTimer = setTimeout(() => {
       setBoostActive(true);
-      setGlowColor(generateRandomGlowColor()); // Set random glow color on boost
-    }, 2000); // Boost activates 2 seconds after spaceship starts
+      const newColor = generateRandomGlowColor();
+      setGlowColor(newColor);
+
+      // Update material colors for WebGL optimization
+      materials.hull.boost.emissive.set(newColor);
+      materials.wing.boost.emissive.set(newColor);
+      materials.cockpit.boost.color.set(newColor);
+      materials.cockpit.boost.emissive.set(newColor);
+      materials.flame.boost.color.set(newColor);
+      materials.flame.boost.emissive.set(newColor);
+      materials.trail.color.set(newColor);
+      materials.trail.emissive.set(newColor);
+    }, 2000);
 
     return () => clearTimeout(boostTimer);
-  }, [isActive, boostMode]);
+  }, [isActive, boostMode, materials]);
 
+  // WebGL-optimized animation frame
   useFrame((state) => {
     if (!spaceshipRef.current || !isActive) return;
 
+    const time = state.clock.elapsedTime;
     const currentSpeed = boostActive ? speed * 3 : speed;
 
     // Move spaceship across the screen
     position.x += currentSpeed * 0.05;
-    position.z += currentSpeed * 0.02; // Slight z movement for depth
+    position.z += currentSpeed * 0.02;
 
-    // Add some subtle vertical oscillation
-    position.y = 2 + Math.sin(state.clock.elapsedTime * 2) * 0.3;
+    // Add smooth vertical oscillation
+    position.y = 2 + Math.sin(time * 2) * 0.3;
 
     spaceshipRef.current.position.copy(position);
 
-    // Rotate slightly based on movement
-    spaceshipRef.current.rotation.y =
-      -0.3 + Math.sin(state.clock.elapsedTime) * 0.1;
-    spaceshipRef.current.rotation.z =
-      Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
+    // Optimized rotation calculations
+    spaceshipRef.current.rotation.y = -0.3 + Math.sin(time) * 0.1;
+    spaceshipRef.current.rotation.z = Math.sin(time * 1.5) * 0.05;
 
     // Reset position when off screen
     if (position.x > 20) {
       position.set(-15, 2, -8);
       setBoostActive(false);
 
-      // Re-enable boost after reset with new random glow color
+      // Re-enable boost with new random color
       setTimeout(() => {
         if (boostMode) {
           setBoostActive(true);
-          setGlowColor(generateRandomGlowColor());
+          const newColor = generateRandomGlowColor();
+          setGlowColor(newColor);
         }
       }, 2000);
     }
@@ -103,85 +226,73 @@ export default function FlyingSpaceship({
     }
   });
 
+  // Cleanup materials and geometries on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(geometries).forEach((geo) => geo.dispose());
+      Object.values(materials.hull).forEach((mat) => mat.dispose());
+      Object.values(materials.wing).forEach((mat) => mat.dispose());
+      Object.values(materials.cockpit).forEach((mat) => mat.dispose());
+      Object.values(materials.flame).forEach((mat) => mat.dispose());
+      materials.engine.dispose();
+      materials.trail.dispose();
+    };
+  }, [geometries, materials]);
+
   const createSpaceship = () => (
     <group>
       {/* Main Hull */}
-      <mesh>
-        <coneGeometry args={[0.3, 1.2, 8]} />
-        <meshStandardMaterial
-          color={boostActive ? "#4a5568" : "#2d3748"}
-          metalness={0.8}
-          roughness={0.2}
-          emissive={boostActive ? glowColor : "#000000"}
-          emissiveIntensity={boostActive ? 0.3 : 0}
-        />
-      </mesh>
+      <mesh
+        geometry={geometries.hull}
+        material={boostActive ? materials.hull.boost : materials.hull.normal}
+      />
 
       {/* Wings */}
-      <mesh position={[-0.4, 0, 0.2]} rotation={[0, 0, Math.PI / 6]}>
-        <boxGeometry args={[0.8, 0.05, 0.4]} />
-        <meshStandardMaterial
-          color={boostActive ? "#e53e3e" : "#c53030"}
-          metalness={0.6}
-          roughness={0.3}
-          emissive={boostActive ? glowColor : "#000000"}
-          emissiveIntensity={boostActive ? 0.4 : 0}
-        />
-      </mesh>
-      <mesh position={[0.4, 0, 0.2]} rotation={[0, 0, -Math.PI / 6]}>
-        <boxGeometry args={[0.8, 0.05, 0.4]} />
-        <meshStandardMaterial
-          color={boostActive ? "#e53e3e" : "#c53030"}
-          metalness={0.6}
-          roughness={0.3}
-          emissive={boostActive ? glowColor : "#000000"}
-          emissiveIntensity={boostActive ? 0.4 : 0}
-        />
-      </mesh>
+      <mesh
+        position={[-0.4, 0, 0.2]}
+        rotation={[0, 0, Math.PI / 6]}
+        geometry={geometries.wing}
+        material={boostActive ? materials.wing.boost : materials.wing.normal}
+      />
+      <mesh
+        position={[0.4, 0, 0.2]}
+        rotation={[0, 0, -Math.PI / 6]}
+        geometry={geometries.wing}
+        material={boostActive ? materials.wing.boost : materials.wing.normal}
+      />
 
       {/* Cockpit */}
-      <mesh position={[0, 0.1, 0.4]}>
-        <sphereGeometry args={[0.15, 8, 8]} />
-        <meshStandardMaterial
-          color={boostActive ? glowColor : "#0078d4"}
-          emissive={boostActive ? glowColor : "#0078d4"}
-          emissiveIntensity={boostActive ? 1.2 : 0.3}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
+      <mesh
+        position={[0, 0.1, 0.4]}
+        geometry={geometries.cockpit}
+        material={
+          boostActive ? materials.cockpit.boost : materials.cockpit.normal
+        }
+      />
 
       {/* Engine Nozzles */}
-      <mesh position={[-0.2, 0, -0.7]}>
-        <cylinderGeometry args={[0.05, 0.08, 0.2, 8]} />
-        <meshStandardMaterial color="#1a202c" />
-      </mesh>
-      <mesh position={[0.2, 0, -0.7]}>
-        <cylinderGeometry args={[0.05, 0.08, 0.2, 8]} />
-        <meshStandardMaterial color="#1a202c" />
-      </mesh>
+      <mesh
+        position={[-0.2, 0, -0.7]}
+        geometry={geometries.engine}
+        material={materials.engine}
+      />
+      <mesh
+        position={[0.2, 0, -0.7]}
+        geometry={geometries.engine}
+        material={materials.engine}
+      />
 
       {/* Engine Flames */}
-      <mesh position={[-0.2, 0, -0.9]}>
-        <coneGeometry args={[0.04, boostActive ? 0.8 : 0.3, 6]} />
-        <meshStandardMaterial
-          color={boostActive ? glowColor : "#3182ce"}
-          emissive={boostActive ? glowColor : "#3182ce"}
-          emissiveIntensity={boostActive ? 2.0 : 0.8}
-          transparent
-          opacity={0.9}
-        />
-      </mesh>
-      <mesh position={[0.2, 0, -0.9]}>
-        <coneGeometry args={[0.04, boostActive ? 0.8 : 0.3, 6]} />
-        <meshStandardMaterial
-          color={boostActive ? glowColor : "#3182ce"}
-          emissive={boostActive ? glowColor : "#3182ce"}
-          emissiveIntensity={boostActive ? 2.0 : 0.8}
-          transparent
-          opacity={0.9}
-        />
-      </mesh>
+      <mesh
+        position={[-0.2, 0, -0.9]}
+        geometry={boostActive ? geometries.boostFlame : geometries.flame}
+        material={boostActive ? materials.flame.boost : materials.flame.normal}
+      />
+      <mesh
+        position={[0.2, 0, -0.9]}
+        geometry={boostActive ? geometries.boostFlame : geometries.flame}
+        material={boostActive ? materials.flame.boost : materials.flame.normal}
+      />
 
       {/* Boost Trail Effect */}
       {boostActive && (
@@ -191,30 +302,22 @@ export default function FlyingSpaceship({
               key={i}
               position={[0, 0, -1.2 - i * 0.3]}
               scale={[1 - i * 0.15, 1 - i * 0.15, 1]}
-            >
-              <sphereGeometry args={[0.1, 8, 8]} />
-              <meshStandardMaterial
-                color={glowColor}
-                emissive={glowColor}
-                emissiveIntensity={1.5 - i * 0.25}
-                transparent
-                opacity={0.9 - i * 0.15}
-              />
-            </mesh>
-          ))}
-
-          {/* Additional glow sphere around spaceship */}
-          <mesh position={[0, 0, 0]} scale={[2, 2, 2]}>
-            <sphereGeometry args={[0.5, 16, 16]} />
-            <meshStandardMaterial
-              color={glowColor}
-              emissive={glowColor}
-              emissiveIntensity={0.2}
-              transparent
-              opacity={0.1}
+              geometry={geometries.trail}
+              material={materials.trail}
             />
-          </mesh>
+          ))}
         </group>
+      )}
+
+      {/* Point light for glow effect */}
+      {boostActive && (
+        <pointLight
+          position={[0, 0, 0]}
+          color={glowColor}
+          intensity={0.8}
+          distance={8}
+          decay={2}
+        />
       )}
     </group>
   );
@@ -222,14 +325,8 @@ export default function FlyingSpaceship({
   if (!isActive) return null;
 
   return (
-    <Float
-      speed={boostActive ? 4 : 1}
-      rotationIntensity={boostActive ? 0.5 : 0.2}
-      floatIntensity={boostActive ? 0.8 : 0.3}
-    >
-      <group ref={spaceshipRef} scale={boostActive ? 1.2 : 1}>
-        {createSpaceship()}
-      </group>
+    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.3}>
+      <group ref={spaceshipRef}>{createSpaceship()}</group>
     </Float>
   );
 }

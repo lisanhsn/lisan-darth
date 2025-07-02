@@ -80,7 +80,10 @@ export default function ImperialFooter() {
   };
 
   return (
-    <footer className="relative bg-imperial-black border-t border-imperial-red overflow-hidden">
+    <footer className="relative bg-imperial-black border-t border-imperial-red overflow-hidden glass-section">
+      {/* Glass Overlay */}
+      <div className="glass-overlay" />
+
       {/* Background Effects */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-pattern" />
@@ -89,7 +92,7 @@ export default function ImperialFooter() {
         {Array.from({ length: 6 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-12 h-12 border border-imperial-red rounded-full"
+            className="absolute w-12 h-12 border border-imperial-red rounded-full glass-float"
             style={{
               left: `${15 + i * 15}%`,
               top: `${20 + (i % 2) * 40}%`,
@@ -114,7 +117,7 @@ export default function ImperialFooter() {
           {/* Imperial Identity */}
           <div className="lg:col-span-2">
             <motion.div
-              className="mb-8"
+              className="mb-8 glass-panel glass-imperial p-6 rounded-3xl"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -123,7 +126,7 @@ export default function ImperialFooter() {
               {/* Imperial Logo */}
               <div className="flex items-center space-x-4 mb-6">
                 <motion.div
-                  className="w-12 h-12 border-2 border-imperial-red rounded-full bg-imperial-black relative"
+                  className="w-12 h-12 border-2 border-imperial-red rounded-full bg-imperial-black relative glass-float"
                   animate={{ rotate: 360 }}
                   transition={{
                     duration: 20,
@@ -136,7 +139,7 @@ export default function ImperialFooter() {
                   </div>
                 </motion.div>
                 <div>
-                  <h3 className="text-2xl font-orbitron font-bold text-imperial-red sith-text">
+                  <h3 className="text-2xl font-orbitron font-bold text-imperial-red sith-text holo-text">
                     DARTH LISAN
                   </h3>
                   <p className="text-imperial-gold font-exo">
@@ -154,14 +157,14 @@ export default function ImperialFooter() {
 
               {/* Imperial Stats */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-imperial-red bg-opacity-20 border border-imperial-red rounded-3xl p-3 text-center">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red">
+                <div className="glass-panel glass-imperial rounded-3xl p-3 text-center">
+                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
                     42
                   </div>
                   <div className="text-xs text-imperial-gold">PROJECTS</div>
                 </div>
-                <div className="bg-imperial-red bg-opacity-20 border border-imperial-red rounded-3xl p-3 text-center">
-                  <div className="text-2xl font-orbitron font-bold text-imperial-red">
+                <div className="glass-panel glass-imperial rounded-3xl p-3 text-center">
+                  <div className="text-2xl font-orbitron font-bold text-imperial-red holo-text">
                     100%
                   </div>
                   <div className="text-xs text-imperial-gold">DARK SIDE</div>
@@ -177,8 +180,9 @@ export default function ImperialFooter() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
+              className="glass-card p-6 rounded-3xl"
             >
-              <h4 className="text-lg font-orbitron font-bold text-imperial-gold mb-6 flex items-center">
+              <h4 className="text-lg font-orbitron font-bold text-imperial-gold mb-6 flex items-center holo-text">
                 <Shield className="w-5 h-5 mr-2" />
                 IMPERIAL NAVIGATION
               </h4>
@@ -193,7 +197,7 @@ export default function ImperialFooter() {
                   >
                     <a
                       href={link.href}
-                      className="text-imperial-white hover:text-imperial-gold transition-colors duration-300 flex items-center group"
+                      className="text-imperial-white hover:text-imperial-gold transition-colors duration-300 flex items-center group glass-btn px-2 py-1 rounded-lg"
                     >
                       <span className="w-2 h-2 bg-imperial-red rounded-full mr-3 group-hover:bg-imperial-gold transition-colors duration-300" />
                       {link.label}
@@ -204,31 +208,32 @@ export default function ImperialFooter() {
             </motion.div>
           </div>
 
-          {/* Imperial Technologies */}
+          {/* Technologies */}
           <div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
+              className="glass-card p-6 rounded-3xl"
             >
-              <h4 className="text-lg font-orbitron font-bold text-imperial-gold mb-6 flex items-center">
+              <h4 className="text-lg font-orbitron font-bold text-imperial-gold mb-6 flex items-center holo-text">
                 <Code className="w-5 h-5 mr-2" />
-                IMPERIAL TECH
+                IMPERIAL ARSENAL
               </h4>
-              <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
                 {technologiesUsed.map((tech, index) => (
-                  <motion.div
+                  <motion.span
                     key={tech}
-                    className="text-imperial-white text-sm flex items-center"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    className="px-3 py-1 glass-panel glass-imperial rounded-full text-xs text-imperial-white border border-imperial-gray hover:border-imperial-gold transition-all duration-300"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     viewport={{ once: true }}
+                    whileHover={{ scale: 1.05 }}
                   >
-                    <Zap className="w-3 h-3 text-imperial-blue mr-2" />
                     {tech}
-                  </motion.div>
+                  </motion.span>
                 ))}
               </div>
             </motion.div>
@@ -237,121 +242,86 @@ export default function ImperialFooter() {
 
         {/* Social Links */}
         <motion.div
-          className="border-t border-imperial-gray pt-12 mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="border-t border-imperial-gray pt-8 mb-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
         >
-          <h4 className="text-center text-lg font-orbitron font-bold text-imperial-gold mb-8">
-            IMPERIAL COMMUNICATION NETWORKS
-          </h4>
-          <div className="flex flex-wrap justify-center gap-6">
-            {socialLinks.map((social, index) => {
-              const IconComponent = social.icon;
-              return (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  target={social.href.startsWith("http") ? "_blank" : undefined}
-                  rel={
-                    social.href.startsWith("http")
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                  className="group bg-imperial-black bg-opacity-50 border border-imperial-gray rounded-3xl p-4 hover:border-imperial-red transition-all duration-300 force-field"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="text-center">
-                    <IconComponent className="w-6 h-6 text-imperial-red group-hover:text-imperial-gold transition-colors duration-300 mx-auto mb-2" />
-                    <div className="text-xs text-imperial-white font-orbitron font-bold mb-1">
-                      {social.label}
-                    </div>
-                    <div className="text-xs text-imperial-white opacity-60">
-                      {social.description}
-                    </div>
-                  </div>
-                </motion.a>
-              );
-            })}
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+            <div className="flex space-x-6">
+              {socialLinks.map((social, index) => {
+                const IconComponent = social.icon;
+                return (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="glass-btn glass-imperial p-3 rounded-2xl hover:glass-gold transition-all duration-300 group"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.1 }}
+                    title={social.description}
+                  >
+                    <IconComponent className="w-5 h-5 text-imperial-red group-hover:text-imperial-gold transition-colors duration-300" />
+                  </motion.a>
+                );
+              })}
+            </div>
+
+            {/* Scroll to Top */}
+            {showScrollTop && (
+              <motion.button
+                onClick={scrollToTop}
+                className="glass-btn glass-imperial p-3 rounded-full hover:glass-gold transition-all duration-300 group"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                title="Return to Command Center"
+              >
+                <ArrowUp className="w-5 h-5 text-imperial-red group-hover:text-imperial-gold transition-colors duration-300" />
+              </motion.button>
+            )}
           </div>
         </motion.div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-imperial-gray pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <motion.div
-              className="flex items-center space-x-2 text-imperial-white text-sm"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <span>© {currentYear} Darth Lisan. Made with</span>
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <Heart className="w-4 h-4 text-imperial-red" />
-              </motion.div>
-              <span>and the dark side of the Force.</span>
-            </motion.div>
-
-            <motion.div
-              className="flex items-center space-x-4 text-imperial-gold text-sm"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <span className="font-orbitron">IMPERIAL PORTFOLIO v2.0</span>
-              <span className="w-1 h-1 bg-imperial-gold rounded-full" />
-              <span>CLASSIFIED</span>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Imperial Seal */}
+        {/* Copyright & Attribution */}
         <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, scale: 0.5 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          className="glass-panel glass-imperial p-6 rounded-3xl text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 border-2 border-imperial-gold rounded-full bg-imperial-black bg-opacity-50 relative">
-            <motion.div
-              className="w-10 h-10 border border-imperial-red rounded-full bg-imperial-red bg-opacity-20"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            >
-              <div className="absolute inset-2 bg-imperial-gold rounded-full opacity-80" />
-            </motion.div>
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <p className="text-imperial-white text-sm">
+              © {currentYear} Darth Lisan. All rights reserved to the Empire.
+            </p>
+            <div className="flex items-center space-x-2 text-imperial-gold text-sm">
+              <span>Built with</span>
+              <Heart className="w-4 h-4 text-imperial-red" />
+              <span>and the power of the dark side</span>
+            </div>
           </div>
-          <p className="text-imperial-gold font-orbitron text-xs mt-2 tracking-wider">
-            IMPERIAL SEAL OF AUTHENTICITY
-          </p>
+
+          {/* Imperial Declaration */}
+          <motion.div
+            className="mt-4 pt-4 border-t border-imperial-gray"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-xs text-imperial-gold italic holo-text">
+              "Your lack of faith in my portfolio is disturbing." - Darth Lisan
+            </p>
+          </motion.div>
         </motion.div>
       </div>
-
-      {/* Scroll to Top Button */}
-      {showScrollTop && (
-        <motion.button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 imperial-button p-3 rounded-full"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ArrowUp className="w-5 h-5 text-imperial-white" />
-        </motion.button>
-      )}
     </footer>
   );
 }
