@@ -19,8 +19,8 @@ const nextConfig = {
     : {
         output: "export",
         trailingSlash: true,
-        basePath: "",
-        assetPrefix: "",
+        basePath: "/lisan-darth",
+        assetPrefix: "/lisan-darth",
       }),
 
   experimental: {
