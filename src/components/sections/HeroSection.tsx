@@ -11,6 +11,33 @@ import SVGDarthVader from "@/components/3d/SVGDarthVader";
 import FlyingSpaceship from "@/components/3d/FlyingSpaceship";
 import { useMobile } from "../../hooks/useMobile";
 
+// Error boundary for 3D components
+class Canvas3DErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.error("3D Canvas Error:", error);
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("3D Canvas Error Details:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isInteracting, setIsInteracting] = useState(false);
@@ -71,89 +98,105 @@ export default function HeroSection() {
 
       {/* 3D Canvas Background - Enhanced for all devices */}
       <div className="absolute inset-0 opacity-40">
-        <Canvas
-          camera={{ position: [0, 0, 8], fov: 75 }}
-          gl={{
-            antialias: !isMobile,
-            alpha: true,
-            powerPreference: "high-performance",
-            precision: isMobile ? "mediump" : "highp",
-          }}
-          style={{
-            background: "transparent",
-            willChange: "transform",
-            transform: "translateZ(0)",
-          }}
-          frameloop="always"
-          performance={{ min: 0.5 }}
-          onCreated={({ gl }) => {
-            gl.setPixelRatio(
-              Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
-            );
-            gl.outputColorSpace = "srgb"; // Updated from outputEncoding
-            gl.toneMapping = 4; // ACESFilmicToneMapping
-          }}
+        <Canvas3DErrorBoundary
+          fallback={
+            <div className="w-full h-full bg-gradient-to-br from-space-dark via-red-900/20 to-black flex items-center justify-center">
+              <div className="text-imperial-red text-center">
+                <div className="w-16 h-16 border-4 border-imperial-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-lg font-orbitron">
+                  Loading Imperial Interface...
+                </p>
+              </div>
+            </div>
+          }
         >
-          <Suspense fallback={null}>
-            {/* Stars - reduced count on mobile */}
-            <Stars
-              radius={300}
-              depth={60}
-              count={isMobile ? 500 : 1000}
-              factor={4}
-              saturation={0.1}
-              fade={true}
-            />
-
-            {/* Main Darth Vader Model - centered and prominent */}
-            <Float speed={0.8} rotationIntensity={0.2} floatIntensity={0.4}>
-              <DarthVaderModel
-                position={[2, 0, -2]}
-                scale={isMobile ? 0.25 : 0.4}
-                interactive={!isMobile}
+          <Canvas
+            onError={(error) => {
+              console.error("Canvas error:", error);
+            }}
+            camera={{ position: [0, 0, 8], fov: 75 }}
+            gl={{
+              antialias: !isMobile,
+              alpha: true,
+              powerPreference: "high-performance",
+              precision: isMobile ? "mediump" : "highp",
+            }}
+            style={{
+              background: "transparent",
+              willChange: "transform",
+              transform: "translateZ(0)",
+            }}
+            frameloop="always"
+            performance={{ min: 0.5 }}
+            onCreated={({ gl }) => {
+              gl.setPixelRatio(
+                Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
+              );
+              gl.outputColorSpace = "srgb"; // Updated from outputEncoding
+              gl.toneMapping = 4; // ACESFilmicToneMapping
+            }}
+          >
+            <Suspense fallback={null}>
+              {/* Stars - reduced count on mobile */}
+              <Stars
+                radius={300}
+                depth={60}
+                count={isMobile ? 500 : 1000}
+                factor={4}
+                saturation={0.1}
+                fade={true}
               />
-            </Float>
 
-            {/* Flying Spaceships - desktop only for performance */}
-            {!isMobile && (
-              <>
-                <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
-                <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
-              </>
-            )}
+              {/* Main Darth Vader Model - centered and prominent */}
+              <Float speed={0.8} rotationIntensity={0.2} floatIntensity={0.4}>
+                <DarthVaderModel
+                  position={[2, 0, -2]}
+                  scale={isMobile ? 0.25 : 0.4}
+                  interactive={!isMobile}
+                />
+              </Float>
 
-            {/* Enhanced Lighting Setup */}
-            <ambientLight intensity={0.4} />
-            <directionalLight
-              position={[5, 5, 5]}
-              intensity={0.8}
-              castShadow
-              shadow-mapSize-width={1024}
-              shadow-mapSize-height={1024}
-            />
-            <pointLight
-              position={[10, 10, 10]}
-              intensity={0.6}
-              distance={40}
-              decay={2}
-            />
-            <pointLight
-              position={[-5, -5, 5]}
-              intensity={0.4}
-              color="#ff6b35"
-              distance={30}
-              decay={2}
-            />
-            {/* Red accent lighting for Sith atmosphere */}
-            <pointLight
-              position={[2, 2, 0]}
-              intensity={1.2}
-              color="#ff3333"
-              distance={15}
-              decay={2}
-            />
-          </Suspense>
-        </Canvas>
+              {/* Flying Spaceships - desktop only for performance */}
+              {!isMobile && (
+                <>
+                  <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
+                  <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
+                </>
+              )}
+
+              {/* Enhanced Lighting Setup */}
+              <ambientLight intensity={0.4} />
+              <directionalLight
+                position={[5, 5, 5]}
+                intensity={0.8}
+                castShadow
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+              />
+              <pointLight
+                position={[10, 10, 10]}
+                intensity={0.6}
+                distance={40}
+                decay={2}
+              />
+              <pointLight
+                position={[-5, -5, 5]}
+                intensity={0.4}
+                color="#ff6b35"
+                distance={30}
+                decay={2}
+              />
+              {/* Red accent lighting for Sith atmosphere */}
+              <pointLight
+                position={[2, 2, 0]}
+                intensity={1.2}
+                color="#ff3333"
+                distance={15}
+                decay={2}
+              />
+            </Suspense>
+          </Canvas>
+        </Canvas3DErrorBoundary>
       </div>
 
       {/* Main Content Grid */}
