@@ -90,7 +90,7 @@ export default function HeroSection() {
             gl.setPixelRatio(
               Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
             );
-            gl.outputEncoding = 3001; // sRGBEncoding
+            gl.outputColorSpace = "srgb"; // Updated from outputEncoding
             gl.toneMapping = 4; // ACESFilmicToneMapping
           }}
         >

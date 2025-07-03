@@ -14,8 +14,12 @@ interface DarthVaderModelProps {
   interactive?: boolean;
 }
 
+// Get the correct base path for deployment
+const basePath = process.env.NODE_ENV === "production" ? "/lisan-darth" : "";
+const modelPath = `${basePath}/darthvader/scene.gltf`;
+
 // Preload the model for better performance
-useGLTF.preload("/darthvader/scene.gltf");
+useGLTF.preload(modelPath);
 
 function DarthVaderModelInner({
   position = [0, 0, 0],
@@ -32,18 +36,18 @@ function DarthVaderModelInner({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Load the GLTF model
-  const { scene } = useGLTF("/darthvader/scene.gltf");
+  const { scene } = useGLTF(modelPath);
 
   // Debug logging
   useEffect(() => {
-    console.log("DarthVaderModel: Loading GLTF from /darthvader/scene.gltf");
+    console.log("DarthVaderModel: Loading GLTF from", modelPath);
     if (scene) {
       console.log("DarthVaderModel: GLTF loaded successfully", scene);
     }
-  }, [scene]);
+  }, [scene, modelPath]);
 
   // Clone the scene to avoid conflicts if used multiple times
-  const clonedScene = scene.clone();
+  const clonedScene = scene ? scene.clone() : null;
 
   useEffect(() => {
     if (clonedScene) {
@@ -140,7 +144,7 @@ function DarthVaderModelInner({
     <group ref={groupRef} position={position} rotation={rotation}>
       {/* Main Darth Vader Model */}
       <group ref={modelRef}>
-        <primitive object={clonedScene} />
+        {clonedScene && <primitive object={clonedScene} />}
       </group>
 
       {/* Dark Side Aura */}
