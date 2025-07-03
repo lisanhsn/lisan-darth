@@ -147,14 +147,12 @@ export default function HeroSection() {
                 fade={true}
               />
 
-              {/* Main Darth Vader Model - centered and prominent */}
-              <Float speed={0.8} rotationIntensity={0.2} floatIntensity={0.4}>
-                <DarthVaderModel
-                  position={[2, 0, -2]}
-                  scale={isMobile ? 0.25 : 0.4}
-                  interactive={!isMobile}
-                />
-              </Float>
+              {/* Main Darth Vader Model - positioned for maximum impact */}
+              <DarthVaderModel
+                position={isMobile ? [1.5, 0, 0] : [3, 0, 0]}
+                scale={isMobile ? 0.8 : 1.2}
+                interactive={!isMobile}
+              />
 
               {/* Flying Spaceships - desktop only for performance */}
               {!isMobile && (

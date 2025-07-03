@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useRef, useEffect, useState, Suspense } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, Float, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
-import { Group, Mesh } from "three";
+import { Group, Mesh, MeshStandardMaterial } from "three";
 
 interface DarthVaderModelProps {
   position?: [number, number, number];
@@ -41,7 +41,6 @@ class ModelErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return this.props.fallback;
     }
-
     return this.props.children;
   }
 }
@@ -69,112 +68,156 @@ function DarthVaderModelInner({
   const [modelLoaded, setModelLoaded] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
 
-  // Load the GLTF model with error handling
-  let scene = null;
-  try {
-    const gltf = useGLTF(modelPath);
-    scene = gltf.scene;
-  } catch (error) {
-    console.error("Error loading GLTF model:", error);
-    setLoadingError(error instanceof Error ? error.message : "Unknown error");
-  }
+  const { scene } = useThree();
 
-  // Debug logging
+  // Load the GLTF model with proper error handling
+  const { scene: gltfScene, materials, nodes } = useGLTF(modelPath);
+
+  // Debug and setup the model
   useEffect(() => {
-    console.log("DarthVaderModel: Loading GLTF from", modelPath);
-    if (scene) {
-      console.log("DarthVaderModel: GLTF loaded successfully", scene);
+    console.log("🎭 DarthVaderModel: Loading GLTF from", modelPath);
+
+    if (gltfScene) {
+      console.log("✅ GLTF loaded successfully:");
+      console.log("📦 Scene:", gltfScene);
+      console.log("🎨 Materials:", materials);
+      console.log("🔗 Nodes:", nodes);
+
+      // Calculate bounding box to understand model size
+      const box = new THREE.Box3().setFromObject(gltfScene);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+
+      console.log("📏 Model dimensions:", {
+        size: size,
+        center: center,
+        min: box.min,
+        max: box.max,
+      });
+
       setModelLoaded(true);
-    } else if (loadingError) {
-      console.error("DarthVaderModel: Failed to load GLTF:", loadingError);
     }
-  }, [scene, modelPath, loadingError]);
+  }, [gltfScene, materials, nodes, modelPath]);
 
-  // Clone the scene to avoid conflicts if used multiple times
-  const clonedScene = scene ? scene.clone() : null;
+  // Clone and setup the scene
+  const clonedScene = React.useMemo(() => {
+    if (!gltfScene) return null;
 
-  useEffect(() => {
-    if (clonedScene) {
-      try {
-        // Enhance materials for dark side effect
-        clonedScene.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            if (child.material) {
-              // Create enhanced material for Darth Vader
-              const material = child.material as THREE.MeshStandardMaterial;
+    try {
+      const cloned = gltfScene.clone();
 
+      // Calculate proper scale - the model is very small, so we need to scale it up significantly
+      const box = new THREE.Box3().setFromObject(cloned);
+      const size = box.getSize(new THREE.Vector3());
+      const maxDimension = Math.max(size.x, size.y, size.z);
+
+      // Scale factor to make the model about 2 units tall
+      const targetSize = 2;
+      const scaleFactor = targetSize / maxDimension;
+
+      console.log(
+        `🔧 Scaling model by ${scaleFactor} (original max dimension: ${maxDimension})`
+      );
+
+      // Apply dramatic scaling since the original model is tiny
+      const finalScale = scaleFactor * scale * 50; // Additional boost for visibility
+      cloned.scale.setScalar(finalScale);
+
+      // Center the model
+      const center = box.getCenter(new THREE.Vector3());
+      cloned.position.set(
+        -center.x * finalScale,
+        -center.y * finalScale,
+        -center.z * finalScale
+      );
+
+      // Enhance materials for better visibility and Imperial theme
+      cloned.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          console.log("🎭 Processing mesh:", child.name, child.material);
+
+          if (child.material instanceof MeshStandardMaterial) {
+            // Make materials more visible and dramatic
+            child.material.metalness = 0.8;
+            child.material.roughness = 0.3;
+
+            // Enhance the dark side aesthetic
+            if (child.material.name?.includes("Default1")) {
               // Make it darker and more menacing
-              material.color.multiplyScalar(0.7);
-              material.roughness = 0.3;
-              material.metalness = 0.8;
-
-              // Add subtle red glow to dark areas
-              if (material.name?.includes("Default1")) {
-                material.emissive = new THREE.Color(0x220000);
-                material.emissiveIntensity = 0.1;
-              }
-
-              // Enable shadows
-              child.castShadow = true;
-              child.receiveShadow = true;
+              child.material.color.multiplyScalar(0.5);
+              child.material.emissive = new THREE.Color(0x220000);
+              child.material.emissiveIntensity = 0.2;
             }
-          }
-        });
 
-        // Scale and orient the model properly
-        clonedScene.scale.set(scale * 20, scale * 20, scale * 20);
-        clonedScene.position.set(0, -1, 0);
-      } catch (error) {
-        console.error("Error processing model materials:", error);
-      }
+            // Enable shadows
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            // Force material update
+            child.material.needsUpdate = true;
+          }
+
+          // Make sure the mesh is visible
+          child.visible = true;
+          child.frustumCulled = false;
+        }
+      });
+
+      return cloned;
+    } catch (error) {
+      console.error("❌ Error processing model:", error);
+      setLoadingError(error instanceof Error ? error.message : "Unknown error");
+      return null;
     }
-  }, [clonedScene, scale]);
+  }, [gltfScene, scale]);
 
   // Enhanced animations with Force powers
   useFrame((state) => {
+    if (!modelLoaded) return;
+
     try {
       const time = state.clock.elapsedTime;
 
       if (groupRef.current) {
         // Slow, menacing rotation
-        groupRef.current.rotation.y = time * 0.15 + mousePosition.x * 0.1;
+        groupRef.current.rotation.y = time * 0.2 + mousePosition.x * 0.15;
 
         // Subtle floating animation
         groupRef.current.position.y = position[1] + Math.sin(time * 0.8) * 0.1;
 
         // Interactive tilt based on hover
         if (isHovered && interactive) {
-          groupRef.current.rotation.x = Math.sin(time * 2) * 0.05;
-          groupRef.current.rotation.z = Math.cos(time * 1.5) * 0.03;
+          groupRef.current.rotation.x = Math.sin(time * 2) * 0.08;
+          groupRef.current.rotation.z = Math.cos(time * 1.5) * 0.05;
         }
       }
 
-      if (modelRef.current) {
+      if (modelRef.current && clonedScene) {
         // Breathing effect - subtle scale animation
-        const breathingScale = 1 + Math.sin(time * 1.2) * 0.02;
+        const breathingScale = 1 + Math.sin(time * 1.5) * 0.03;
         modelRef.current.scale.setScalar(breathingScale);
       }
 
       // Enhanced red lighting effects
       if (lightRef.current) {
-        const intensity = 2 + Math.sin(time * 3) * 0.5;
+        const intensity = 3 + Math.sin(time * 2) * 1;
         lightRef.current.intensity = intensity;
 
         // Lightsaber-like glow pulsing
-        lightRef.current.color.setHSL(0, 1, 0.3 + Math.sin(time * 2) * 0.1);
+        lightRef.current.color.setHSL(0, 1, 0.4 + Math.sin(time * 3) * 0.2);
       }
 
       // Aura effects
       if (auraRef.current) {
-        const auraScale = 1.2 + Math.sin(time * 0.6) * 0.1;
+        const auraScale = 1.3 + Math.sin(time * 0.8) * 0.2;
         auraRef.current.scale.setScalar(auraScale);
 
         // Dark side energy pulsing
         const material = auraRef.current.material as THREE.MeshStandardMaterial;
-        material.opacity = 0.03 + Math.sin(time * 1.5) * 0.02;
+        material.opacity = 0.05 + Math.sin(time * 2) * 0.03;
       }
     } catch (error) {
-      console.error("Error in useFrame animation:", error);
+      console.error("❌ Error in useFrame animation:", error);
     }
   });
 
@@ -188,7 +231,7 @@ function DarthVaderModelInner({
         const y = -(event.clientY / window.innerHeight) * 2 + 1;
         setMousePosition({ x, y });
       } catch (error) {
-        console.error("Error handling mouse move:", error);
+        console.error("❌ Error handling mouse move:", error);
       }
     };
 
@@ -198,6 +241,12 @@ function DarthVaderModelInner({
 
   // If there's an error loading the model, show fallback
   if (loadingError) {
+    console.error("❌ Model loading error:", loadingError);
+    return <DarthVaderFallback />;
+  }
+
+  if (!clonedScene) {
+    console.log("⏳ Model not ready yet, showing fallback");
     return <DarthVaderFallback />;
   }
 
@@ -205,62 +254,82 @@ function DarthVaderModelInner({
     <group ref={groupRef} position={position} rotation={rotation}>
       {/* Main Darth Vader Model */}
       <group ref={modelRef}>
-        {clonedScene && <primitive object={clonedScene} />}
+        <primitive object={clonedScene} />
       </group>
 
-      {/* Dark Side Aura */}
+      {/* Enhanced Dark Side Aura */}
       <mesh ref={auraRef}>
-        <sphereGeometry args={[1.5, 32, 32]} />
+        <sphereGeometry args={[2.5, 32, 32]} />
         <meshStandardMaterial
           color="#ff0000"
           transparent
-          opacity={0.05}
-          emissive="#330000"
-          emissiveIntensity={0.2}
+          opacity={0.08}
+          emissive="#660000"
+          emissiveIntensity={0.3}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* Red Sith Lighting */}
+      {/* Primary Red Sith Lighting */}
       <pointLight
         ref={lightRef}
-        position={[0, 0.5, 1]}
+        position={[0, 1, 2]}
         color="#ff3333"
-        intensity={2}
-        distance={8}
+        intensity={3}
+        distance={12}
         decay={2}
         castShadow
       />
 
-      {/* Additional atmospheric lighting */}
+      {/* Secondary atmospheric lighting */}
       <pointLight
-        position={[-1, 0, 0.5]}
+        position={[-2, 0, 1]}
         color="#660000"
-        intensity={1}
-        distance={4}
+        intensity={2}
+        distance={8}
+        decay={2}
+      />
+
+      <pointLight
+        position={[2, 2, -1]}
+        color="#ff6666"
+        intensity={1.5}
+        distance={6}
         decay={2}
       />
 
       {/* Dark energy particles - only if model is loaded */}
       {interactive && modelLoaded && (
         <Sparkles
-          count={20}
-          scale={2}
-          size={2}
-          speed={0.3}
+          count={30}
+          scale={4}
+          size={3}
+          speed={0.5}
           color="#ff4444"
-          opacity={0.4}
+          opacity={0.6}
         />
       )}
 
-      {/* Force field effect */}
-      <mesh position={[0, 0, 0]} rotation={[0, 0, 0]}>
-        <torusGeometry args={[1.8, 0.02, 16, 32]} />
+      {/* Enhanced Force field effect */}
+      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[3, 0.05, 16, 32]} />
+        <meshStandardMaterial
+          color="#ff4444"
+          emissive="#ff0000"
+          emissiveIntensity={0.5}
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
+
+      {/* Additional ring effects */}
+      <mesh position={[0, 0.5, 0]} rotation={[0, 0, 0]}>
+        <torusGeometry args={[2.5, 0.02, 12, 24]} />
         <meshStandardMaterial
           color="#ff6666"
-          emissive="#ff0000"
-          emissiveIntensity={0.3}
+          emissive="#ff3333"
+          emissiveIntensity={0.4}
           transparent
           opacity={0.6}
         />
@@ -269,47 +338,79 @@ function DarthVaderModelInner({
   );
 }
 
-// Loading fallback component
+// Enhanced loading fallback component
 function DarthVaderFallback() {
   useEffect(() => {
-    console.log("DarthVaderFallback: Displaying loading state");
+    console.log("⏳ DarthVaderFallback: Displaying loading state");
   }, []);
 
   return (
     <group>
-      {/* Main fallback sphere */}
+      {/* Main fallback sphere representing Vader's helmet */}
       <mesh>
-        <sphereGeometry args={[1.5, 32, 32]} />
+        <sphereGeometry args={[1.8, 32, 32]} />
         <meshStandardMaterial
-          color="#333333"
+          color="#1a1a1a"
           emissive="#ff3333"
-          emissiveIntensity={0.4}
+          emissiveIntensity={0.5}
+          metalness={0.9}
+          roughness={0.2}
           transparent
           opacity={0.9}
         />
       </mesh>
 
+      {/* Breathing apparatus representation */}
+      <mesh position={[0, -0.5, 1.5]}>
+        <cylinderGeometry args={[0.3, 0.3, 0.8, 8]} />
+        <meshStandardMaterial
+          color="#333333"
+          emissive="#ff0000"
+          emissiveIntensity={0.3}
+          metalness={0.8}
+          roughness={0.3}
+        />
+      </mesh>
+
       {/* Pulsing red aura */}
       <mesh>
-        <sphereGeometry args={[2, 16, 16]} />
+        <sphereGeometry args={[2.5, 16, 16]} />
         <meshStandardMaterial
           color="#ff0000"
           emissive="#ff0000"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.3}
           transparent
-          opacity={0.3}
+          opacity={0.4}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* Loading light */}
+      {/* Loading lights */}
       <pointLight
-        position={[0, 0, 0]}
+        position={[0, 0, 2]}
         color="#ff3333"
-        intensity={3}
-        distance={10}
+        intensity={4}
+        distance={12}
         decay={2}
+      />
+
+      <pointLight
+        position={[0, -0.5, 1.5]}
+        color="#ff6666"
+        intensity={2}
+        distance={6}
+        decay={2}
+      />
+
+      {/* Loading particles */}
+      <Sparkles
+        count={15}
+        scale={3}
+        size={2}
+        speed={0.8}
+        color="#ff4444"
+        opacity={0.7}
       />
     </group>
   );
@@ -317,16 +418,16 @@ function DarthVaderFallback() {
 
 export default function DarthVaderModel(props: DarthVaderModelProps) {
   useEffect(() => {
-    console.log("DarthVaderModel: Component mounted with props:", props);
+    console.log("🎭 DarthVaderModel: Component mounted with props:", props);
   }, [props]);
 
   return (
     <ModelErrorBoundary fallback={<DarthVaderFallback />}>
       <Float
-        speed={1}
-        rotationIntensity={0.1}
-        floatIntensity={0.2}
-        floatingRange={[0, 0.1]}
+        speed={1.2}
+        rotationIntensity={0.15}
+        floatIntensity={0.3}
+        floatingRange={[0, 0.2]}
       >
         <Suspense fallback={<DarthVaderFallback />}>
           <DarthVaderModelInner {...props} />
