@@ -7,9 +7,15 @@ import { Canvas } from "@react-three/fiber";
 import { Stars, Float } from "@react-three/drei";
 import { Mail, Download, ArrowRight, Crown, Code, Zap } from "lucide-react";
 import DarthVaderModel from "@/components/3d/DarthVaderModel";
+import OptimizedDarthVaderModel from "@/components/3d/OptimizedDarthVaderModel";
 import SVGDarthVader from "@/components/3d/SVGDarthVader";
 import FlyingSpaceship from "@/components/3d/FlyingSpaceship";
+import PerformanceDashboard from "../admin/PerformanceDashboard";
 import { useMobile } from "../../hooks/useMobile";
+import {
+  useWebGLOptimizations,
+  shouldEnableExpensiveEffects,
+} from "../../hooks/useWebGLOptimizations";
 
 // Error boundary for 3D components
 class Canvas3DErrorBoundary extends React.Component<
@@ -43,6 +49,11 @@ export default function HeroSection() {
   const [isInteracting, setIsInteracting] = useState(false);
   const { ref } = useInView({ threshold: 0.1 });
   const isMobile = useMobile();
+
+  // 2025 WebGL optimizations
+  const optimizationSettings = useWebGLOptimizations();
+  const enableExpensiveEffects =
+    shouldEnableExpensiveEffects(optimizationSettings);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -145,13 +156,6 @@ export default function HeroSection() {
                 factor={4}
                 saturation={0.1}
                 fade={true}
-              />
-
-              {/* Main Darth Vader Model - positioned for maximum impact */}
-              <DarthVaderModel
-                position={isMobile ? [2, 0, 0] : [4, 0, 0]}
-                scale={isMobile ? 0.5 : 0.7}
-                interactive={!isMobile}
               />
 
               {/* Flying Spaceships - desktop only for performance */}
@@ -384,54 +388,43 @@ export default function HeroSection() {
                   onClick={() => setIsInteracting(!isInteracting)}
                 >
                   <Suspense fallback={null}>
-                    {/* Enhanced lighting for the main model */}
-                    <ambientLight intensity={0.4} />
-                    <directionalLight
-                      position={[5, 5, 5]}
-                      intensity={1}
-                      castShadow
-                      shadow-mapSize-width={2048}
-                      shadow-mapSize-height={2048}
-                    />
-                    <pointLight
-                      position={[10, 10, 10]}
-                      intensity={0.8}
-                      distance={30}
-                      decay={2}
-                      color="#ffffff"
-                    />
-                    <pointLight
-                      position={[-5, -5, 5]}
-                      intensity={0.5}
-                      color="#ff3333"
-                      distance={25}
-                      decay={2}
-                    />
-                    <pointLight
-                      position={[0, -10, 10]}
-                      intensity={0.3}
-                      color="#660000"
-                      distance={20}
-                      decay={2}
-                    />
-
-                    {/* Main Darth Vader Model - Center Stage */}
-                    <DarthVaderModel
-                      position={[0, -0.5, 0]}
-                      scale={0.5}
+                    {/* 2025 Optimized Darth Vader Model with LOD and adaptive quality */}
+                    <OptimizedDarthVaderModel
+                      position={[0, -0.8, 0]}
+                      scale={0.6}
                       interactive={true}
                       isHovered={isInteracting}
+                      cameraDistance={6}
                     />
 
-                    {/* Background Elements */}
-                    <Stars
-                      radius={100}
-                      depth={50}
-                      count={500}
-                      factor={4}
-                      saturation={0.1}
-                      fade={true}
+                    {/* Adaptive lighting based on quality settings */}
+                    <ambientLight
+                      intensity={
+                        optimizationSettings.qualityLevel === "low" ? 0.4 : 0.5
+                      }
                     />
+                    <directionalLight
+                      position={[5, 5, 5]}
+                      intensity={0.8}
+                      castShadow={optimizationSettings.qualityLevel !== "low"}
+                      shadow-mapSize-width={
+                        optimizationSettings.webglSettings.performanceSettings
+                          .shadowMapSize
+                      }
+                      shadow-mapSize-height={
+                        optimizationSettings.webglSettings.performanceSettings
+                          .shadowMapSize
+                      }
+                    />
+                    {enableExpensiveEffects && (
+                      <pointLight
+                        position={[2, 2, 2]}
+                        intensity={0.4}
+                        color="#ff4444"
+                        distance={8}
+                        decay={2}
+                      />
+                    )}
                   </Suspense>
                 </Canvas>
               </div>
@@ -525,6 +518,9 @@ export default function HeroSection() {
           ))}
         </div>
       )}
+
+      {/* 2025 Performance Monitoring Dashboard */}
+      <PerformanceDashboard />
     </section>
   );
 }
