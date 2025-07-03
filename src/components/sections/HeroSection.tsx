@@ -149,8 +149,8 @@ export default function HeroSection() {
 
               {/* Main Darth Vader Model - positioned for maximum impact */}
               <DarthVaderModel
-                position={isMobile ? [1.5, 0, 0] : [3, 0, 0]}
-                scale={isMobile ? 0.8 : 1.2}
+                position={isMobile ? [2, 0, 0] : [4, 0, 0]}
+                scale={isMobile ? 0.5 : 0.7}
                 interactive={!isMobile}
               />
 
