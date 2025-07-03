@@ -1,29 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, Suspense } from "react";
+import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars, Float } from "@react-three/drei";
+import { Stars, Float } from "@react-three/drei";
 import { Mail, Download, ArrowRight, Crown, Code, Zap } from "lucide-react";
-import DarthVaderHelmet from "@/components/3d/DarthVaderHelmet";
+import DarthVaderModel from "@/components/3d/DarthVaderModel";
 import SVGDarthVader from "@/components/3d/SVGDarthVader";
-import EnhancedSVGDarthVader from "@/components/3d/EnhancedSVGDarthVader";
-import InteractiveHeroScene from "@/components/3d/InteractiveHeroScene";
 import FlyingSpaceship from "@/components/3d/FlyingSpaceship";
 import { useMobile } from "../../hooks/useMobile";
 
 export default function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isInteracting, setIsInteracting] = useState(false);
-  const { ref, inView } = useInView({ threshold: 0.1 });
-  const heroRef = useRef<HTMLElement>(null);
+  const { ref } = useInView({ threshold: 0.1 });
   const isMobile = useMobile();
-
-  useEffect(() => {
-    setIsVisible(true); // Show content immediately on mobile
-  }, []);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -77,108 +69,92 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* 3D Canvas Background - Simplified on mobile */}
-      {!isMobile && (
-        <div className="absolute inset-0 opacity-30">
-          <Canvas
-            camera={{ position: [0, 0, 10], fov: 60 }}
-            gl={{
-              antialias: true,
-              alpha: true,
-              powerPreference: "high-performance",
-              precision: "highp",
-            }}
-            style={{
-              background: "transparent",
-              willChange: "transform",
-              transform: "translateZ(0)",
-            }}
-            frameloop="demand"
-            performance={{ min: 0.5 }}
-            onCreated={({ gl }) => {
-              gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-              gl.outputEncoding = 3001; // sRGBEncoding
-              gl.toneMapping = 4; // ACESFilmicToneMapping
-            }}
-          >
-            <Suspense fallback={null}>
-              <Stars
-                radius={300}
-                depth={60}
-                count={1000}
-                factor={4}
-                saturation={0.1}
-                fade={true}
-              />
-              <Float speed={0.5} rotationIntensity={0.3} floatIntensity={0.3}>
-                <DarthVaderHelmet position={[4, 2, -5]} scale={0.6} />
-              </Float>
-
-              {/* Flying Spaceships with boost mode */}
-              <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
-              <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
-
-              <ambientLight intensity={0.3} />
-              <pointLight
-                position={[10, 10, 10]}
-                intensity={0.5}
-                distance={40}
-                decay={2}
-              />
-              <pointLight
-                position={[-10, -10, 5]}
-                intensity={0.3}
-                color="#ff6b35"
-                distance={30}
-                decay={2}
-              />
-            </Suspense>
-          </Canvas>
-        </div>
-      )}
-
-      {/* Mobile-optimized GPU accelerated background */}
-      {isMobile && (
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-space-dark via-red-900/20 to-black opacity-60"
-          style={{ willChange: "transform" }}
+      {/* 3D Canvas Background - Enhanced for all devices */}
+      <div className="absolute inset-0 opacity-40">
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 75 }}
+          gl={{
+            antialias: !isMobile,
+            alpha: true,
+            powerPreference: "high-performance",
+            precision: isMobile ? "mediump" : "highp",
+          }}
+          style={{
+            background: "transparent",
+            willChange: "transform",
+            transform: "translateZ(0)",
+          }}
+          frameloop="always"
+          performance={{ min: 0.5 }}
+          onCreated={({ gl }) => {
+            gl.setPixelRatio(
+              Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
+            );
+            gl.outputEncoding = 3001; // sRGBEncoding
+            gl.toneMapping = 4; // ACESFilmicToneMapping
+          }}
         >
-          {/* Lightweight CSS-only spaceships for mobile */}
-          <div
-            className="absolute top-1/3 w-4 h-2 bg-imperial-red rounded-full glass-float"
-            style={{
-              willChange: "transform",
-              animation: "flyAcross 6s ease-in-out infinite",
-              animationDelay: "1s",
-            }}
-          >
-            <div className="absolute -left-1 top-0 w-2 h-2 bg-imperial-gold rounded-full" />
-            <div
-              className="absolute -right-2 top-0.5 w-3 h-0.5 bg-gradient-to-r from-blue-400 to-transparent rounded-full"
-              style={{
-                animation: "enginePulse 0.5s ease-in-out infinite",
-              }}
+          <Suspense fallback={null}>
+            {/* Stars - reduced count on mobile */}
+            <Stars
+              radius={300}
+              depth={60}
+              count={isMobile ? 500 : 1000}
+              factor={4}
+              saturation={0.1}
+              fade={true}
             />
-          </div>
 
-          <div
-            className="absolute top-2/3 w-3 h-1.5 bg-energy-blue rounded-full glass-float"
-            style={{
-              willChange: "transform",
-              animation: "flyAcross 8s ease-in-out infinite",
-              animationDelay: "4s",
-            }}
-          >
-            <div className="absolute -left-0.5 top-0 w-1 h-1 bg-imperial-gold rounded-full" />
-            <div
-              className="absolute -right-1 top-0.5 w-2 h-0.5 bg-gradient-to-r from-orange-400 to-transparent rounded-full"
-              style={{
-                animation: "enginePulse 0.3s ease-in-out infinite",
-              }}
+            {/* Main Darth Vader Model - centered and prominent */}
+            <Float speed={0.8} rotationIntensity={0.2} floatIntensity={0.4}>
+              <DarthVaderModel
+                position={[2, 0, -2]}
+                scale={isMobile ? 0.25 : 0.4}
+                interactive={!isMobile}
+              />
+            </Float>
+
+            {/* Flying Spaceships - desktop only for performance */}
+            {!isMobile && (
+              <>
+                <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
+                <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
+              </>
+            )}
+
+            {/* Enhanced Lighting Setup */}
+            <ambientLight intensity={0.4} />
+            <directionalLight
+              position={[5, 5, 5]}
+              intensity={0.8}
+              castShadow
+              shadow-mapSize-width={1024}
+              shadow-mapSize-height={1024}
             />
-          </div>
-        </div>
-      )}
+            <pointLight
+              position={[10, 10, 10]}
+              intensity={0.6}
+              distance={40}
+              decay={2}
+            />
+            <pointLight
+              position={[-5, -5, 5]}
+              intensity={0.4}
+              color="#ff6b35"
+              distance={30}
+              decay={2}
+            />
+            {/* Red accent lighting for Sith atmosphere */}
+            <pointLight
+              position={[2, 2, 0]}
+              intensity={1.2}
+              color="#ff3333"
+              distance={15}
+              decay={2}
+            />
+          </Suspense>
+        </Canvas>
+      </div>
 
       {/* Main Content Grid */}
       <div
@@ -342,20 +318,10 @@ export default function HeroSection() {
 
           {!isMobile ? (
             <div className="w-full h-full relative">
-              {/* Enhanced SVG Darth Vader for desktop */}
+              {/* Main 3D Darth Vader Model */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <EnhancedSVGDarthVader
-                  mousePosition={mousePosition}
-                  className="w-full h-full max-w-md"
-                  isInteracting={isInteracting}
-                  onClick={() => setIsInteracting(!isInteracting)}
-                />
-              </div>
-
-              {/* 3D Helmet floating in background */}
-              <div className="absolute inset-0 opacity-40 pointer-events-none">
                 <Canvas
-                  camera={{ position: [3, 3, 8], fov: 50 }}
+                  camera={{ position: [0, 0, 6], fov: 60 }}
                   gl={{
                     antialias: true,
                     alpha: true,
@@ -367,37 +333,64 @@ export default function HeroSection() {
                     willChange: "transform",
                     transform: "translateZ(0)",
                   }}
-                  frameloop="demand"
+                  frameloop="always"
                   performance={{ min: 0.5 }}
                   onCreated={({ gl }) => {
                     gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                     gl.outputEncoding = 3001; // sRGBEncoding
                     gl.toneMapping = 4; // ACESFilmicToneMapping
                   }}
+                  onClick={() => setIsInteracting(!isInteracting)}
                 >
                   <Suspense fallback={null}>
-                    <ambientLight intensity={0.3} />
-                    <pointLight
-                      position={[10, 10, 10]}
-                      intensity={0.6}
-                      distance={30}
-                      decay={2}
+                    {/* Enhanced lighting for the main model */}
+                    <ambientLight intensity={0.4} />
+                    <directionalLight
+                      position={[5, 5, 5]}
+                      intensity={1}
+                      castShadow
+                      shadow-mapSize-width={2048}
+                      shadow-mapSize-height={2048}
                     />
                     <pointLight
-                      position={[-10, -10, 5]}
-                      intensity={0.3}
-                      color="#ff6b35"
+                      position={[10, 10, 10]}
+                      intensity={0.8}
+                      distance={30}
+                      decay={2}
+                      color="#ffffff"
+                    />
+                    <pointLight
+                      position={[-5, -5, 5]}
+                      intensity={0.5}
+                      color="#ff3333"
                       distance={25}
                       decay={2}
                     />
+                    <pointLight
+                      position={[0, -10, 10]}
+                      intensity={0.3}
+                      color="#660000"
+                      distance={20}
+                      decay={2}
+                    />
 
-                    <Float
-                      speed={0.5}
-                      rotationIntensity={0.2}
-                      floatIntensity={0.3}
-                    >
-                      <DarthVaderHelmet position={[2, 1, -2]} scale={0.8} />
-                    </Float>
+                    {/* Main Darth Vader Model - Center Stage */}
+                    <DarthVaderModel
+                      position={[0, -0.5, 0]}
+                      scale={0.5}
+                      interactive={true}
+                      isHovered={isInteracting}
+                    />
+
+                    {/* Background Elements */}
+                    <Stars
+                      radius={100}
+                      depth={50}
+                      count={500}
+                      factor={4}
+                      saturation={0.1}
+                      fade={true}
+                    />
                   </Suspense>
                 </Canvas>
               </div>
@@ -405,8 +398,20 @@ export default function HeroSection() {
               {/* Interactive UI Overlay */}
               <div className="absolute bottom-4 left-4 right-4 text-center glass-panel glass-imperial p-3 rounded-2xl">
                 <p className="text-imperial-gold text-sm font-orbitron holo-text">
-                  The Dark Lord awaits your command
+                  {isInteracting
+                    ? "The Force is strong with this one..."
+                    : "Click to awaken the Dark Lord"}
                 </p>
+              </div>
+
+              {/* Power indicator */}
+              <div className="absolute top-4 right-4 glass-panel glass-imperial p-2 rounded-xl">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-imperial-red rounded-full animate-pulse" />
+                  <span className="text-imperial-gold text-xs font-orbitron">
+                    DARK SIDE ONLINE
+                  </span>
+                </div>
               </div>
             </div>
           ) : (
