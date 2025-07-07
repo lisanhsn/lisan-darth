@@ -20,10 +20,26 @@ export default function EnhancedSVGDarthVader({
   const [breathingPhase, setBreathingPhase] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBreathingPhase((prev) => (prev + 0.1) % (Math.PI * 2));
-    }, 50);
-    return () => clearInterval(interval);
+    let animationFrameId: number;
+    let lastTime = 0;
+    const targetFPS = 30; // Limit to 30 FPS for better performance
+    const frameInterval = 1000 / targetFPS;
+
+    const animate = (currentTime: number) => {
+      if (currentTime - lastTime >= frameInterval) {
+        setBreathingPhase((prev: number) => (prev + 0.1) % (Math.PI * 2));
+        lastTime = currentTime;
+      }
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
   }, []);
 
   const handleClick = () => {

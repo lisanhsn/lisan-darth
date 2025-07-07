@@ -114,8 +114,10 @@ export default function SkillsSection() {
     skillCategories[activeCategory as keyof typeof skillCategories];
 
   useEffect(() => {
+    let interval: number | null = null;
+    
     if (inView || isMobile) {
-      const interval = setInterval(
+      interval = setInterval(
         () => {
           const categories = Object.keys(skillCategories);
           const currentIndex = categories.indexOf(activeCategory);
@@ -124,10 +126,15 @@ export default function SkillsSection() {
         },
         isMobile ? 4000 : 3000
       );
-
-      return () => clearInterval(interval);
     }
-  }, [activeCategory, inView, isMobile]);
+
+    // Cleanup function that always runs
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [activeCategory, inView, isMobile]); // skillCategories is constant, no need to include
 
   return (
     <section

@@ -10,31 +10,84 @@ export default function AdminLayout({
 }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simple authentication check - in production, use proper authentication
-    const checkAuth = () => {
-      const adminAccess = localStorage.getItem("imperial_admin_access");
-      const password = prompt("Enter Imperial Command Access Code:");
+    const verifyAuthentication = async () => {
+      try {
+        // Check for existing session token
+        const sessionToken = sessionStorage.getItem("imperial_session_token");
+        
+        if (sessionToken) {
+          // Verify token with server
+          const response = await fetch('/api/admin/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${sessionToken}`
+            }
+          });
 
-      if (password === "darth2024" || adminAccess === "granted") {
-        setIsAuthenticated(true);
-        localStorage.setItem("imperial_admin_access", "granted");
-      } else {
-        alert("Access Denied. Invalid credentials.");
+          if (response.ok) {
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            return;
+          } else {
+            // Token is invalid, remove it
+            sessionStorage.removeItem("imperial_session_token");
+          }
+        }
+
+        // Prompt for authentication
+        await authenticateUser();
+      } catch (error) {
+        console.error('Authentication error:', error);
+        setAuthError('Authentication service unavailable');
+        setIsLoading(false);
+      }
+    };
+
+    const authenticateUser = async () => {
+      const password = prompt("Enter Imperial Command Access Code:");
+      
+      if (!password) {
         window.location.href = "/";
         return;
       }
+
+      try {
+        // Send credentials to server for verification
+        const response = await fetch('/api/admin/authenticate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.token) {
+          // Store secure session token (not in localStorage for security)
+          sessionStorage.setItem("imperial_session_token", data.token);
+          setIsAuthenticated(true);
+        } else {
+          alert("Access Denied. Invalid credentials.");
+          window.location.href = "/";
+          return;
+        }
+      } catch (error) {
+        console.error('Authentication failed:', error);
+        setAuthError('Authentication failed');
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      }
+      
       setIsLoading(false);
     };
 
-    // Check if already authenticated
-    if (localStorage.getItem("imperial_admin_access") === "granted") {
-      setIsAuthenticated(true);
-      setIsLoading(false);
-    } else {
-      checkAuth();
-    }
+    verifyAuthentication();
   }, []);
 
   if (isLoading) {
@@ -50,6 +103,9 @@ export default function AdminLayout({
           <p className="text-imperial-gold font-orbitron">
             Verifying Imperial Clearance...
           </p>
+          {authError && (
+            <p className="text-imperial-red text-sm mt-4">{authError}</p>
+          )}
         </motion.div>
       </div>
     );
@@ -65,6 +121,9 @@ export default function AdminLayout({
           <p className="text-imperial-gold">
             Insufficient clearance level for Imperial Command Center
           </p>
+          {authError && (
+            <p className="text-imperial-red text-sm mt-4">{authError}</p>
+          )}
         </div>
       </div>
     );
