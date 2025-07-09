@@ -12,6 +12,7 @@ import SVGDarthVader from "@/components/3d/SVGDarthVader";
 import FlyingSpaceship from "@/components/3d/FlyingSpaceship";
 import PerformanceDashboard from "../admin/PerformanceDashboard";
 import { useMobile } from "../../hooks/useMobile";
+import { useMobilePerformance } from "../../hooks/useMobilePerformance";
 import {
   useWebGLOptimizations,
   shouldEnableExpensiveEffects,
@@ -48,7 +49,8 @@ export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isInteracting, setIsInteracting] = useState(false);
   const { ref } = useInView({ threshold: 0.1 });
-  const isMobile = useMobile();
+  const { isMobile, isLowPerformance } = useMobile();
+  const { settings: mobileSettings, performanceMetrics } = useMobilePerformance();
 
   // 2025 WebGL optimizations
   const optimizationSettings = useWebGLOptimizations();
@@ -108,98 +110,100 @@ export default function HeroSection() {
       </div>
 
       {/* 3D Canvas Background - Enhanced for all devices */}
-      <div className="absolute inset-0 opacity-40">
-        <Canvas3DErrorBoundary
-          fallback={
-            <div className="w-full h-full bg-gradient-to-br from-space-dark via-red-900/20 to-black flex items-center justify-center">
-              <div className="text-imperial-red text-center">
-                <div className="w-16 h-16 border-4 border-imperial-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-lg font-orbitron">
-                  Loading Imperial Interface...
-                </p>
+      {!mobileSettings.disable3D && (
+        <div className="absolute inset-0 opacity-40">
+          <Canvas3DErrorBoundary
+            fallback={
+              <div className="w-full h-full bg-gradient-to-br from-space-dark via-red-900/20 to-black flex items-center justify-center">
+                <div className="text-imperial-red text-center">
+                  <div className="w-16 h-16 border-4 border-imperial-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-lg font-orbitron">
+                    Loading Imperial Interface...
+                  </p>
+                </div>
               </div>
-            </div>
-          }
-        >
-          <Canvas
-            onError={(error) => {
-              console.error("Canvas error:", error);
-            }}
-            camera={{ position: [0, 0, 8], fov: 75 }}
-            gl={{
-              antialias: !isMobile,
-              alpha: true,
-              powerPreference: "high-performance",
-              precision: isMobile ? "mediump" : "highp",
-            }}
-            style={{
-              background: "transparent",
-              willChange: "transform",
-              transform: "translateZ(0)",
-            }}
-            frameloop="always"
-            performance={{ min: 0.5 }}
-            onCreated={({ gl }) => {
-              gl.setPixelRatio(
-                Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
-              );
-              gl.outputColorSpace = "srgb"; // Updated from outputEncoding
-              gl.toneMapping = 4; // ACESFilmicToneMapping
-            }}
+            }
           >
-            <Suspense fallback={null}>
-              {/* Stars - reduced count on mobile */}
-              <Stars
-                radius={300}
-                depth={60}
-                count={isMobile ? 500 : 1000}
-                factor={4}
-                saturation={0.1}
-                fade={true}
-              />
+            <Canvas
+              onError={(error) => {
+                console.error("Canvas error:", error);
+              }}
+              camera={{ position: [0, 0, 8], fov: 75 }}
+              gl={{
+                antialias: !isMobile,
+                alpha: true,
+                powerPreference: "high-performance",
+                precision: isMobile ? "mediump" : "highp",
+              }}
+              style={{
+                background: "transparent",
+                willChange: "transform",
+                transform: "translateZ(0)",
+              }}
+              frameloop="always"
+              performance={{ min: 0.5 }}
+              onCreated={({ gl }) => {
+                gl.setPixelRatio(
+                  Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
+                );
+                gl.outputColorSpace = "srgb"; // Updated from outputEncoding
+                gl.toneMapping = 4; // ACESFilmicToneMapping
+              }}
+            >
+              <Suspense fallback={null}>
+                {/* Stars - reduced count on mobile */}
+                <Stars
+                  radius={300}
+                  depth={60}
+                  count={isLowPerformance ? 200 : isMobile ? 500 : 1000}
+                  factor={4}
+                  saturation={0.1}
+                  fade={true}
+                />
 
-              {/* Flying Spaceships - desktop only for performance */}
-              {!isMobile && (
-                <>
-                  <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
-                  <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
-                </>
-              )}
+                {/* Flying Spaceships - desktop only for performance */}
+                {!isMobile && !mobileSettings.disableComplexAnimations && (
+                  <>
+                    <FlyingSpaceship delay={2} speed={1.2} boostMode={true} />
+                    <FlyingSpaceship delay={8} speed={0.8} boostMode={true} />
+                  </>
+                )}
 
-              {/* Enhanced Lighting Setup */}
-              <ambientLight intensity={0.4} />
-              <directionalLight
-                position={[5, 5, 5]}
-                intensity={0.8}
-                castShadow
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
-              />
-              <pointLight
-                position={[10, 10, 10]}
-                intensity={0.6}
-                distance={40}
-                decay={2}
-              />
-              <pointLight
-                position={[-5, -5, 5]}
-                intensity={0.4}
-                color="#ff6b35"
-                distance={30}
-                decay={2}
-              />
-              {/* Red accent lighting for Sith atmosphere */}
-              <pointLight
-                position={[2, 2, 0]}
-                intensity={1.2}
-                color="#ff3333"
-                distance={15}
-                decay={2}
-              />
-            </Suspense>
-          </Canvas>
-        </Canvas3DErrorBoundary>
-      </div>
+                {/* Enhanced Lighting Setup */}
+                <ambientLight intensity={0.4} />
+                <directionalLight
+                  position={[5, 5, 5]}
+                  intensity={0.8}
+                  castShadow={!mobileSettings.disableShadows}
+                  shadow-mapSize-width={mobileSettings.disableShadows ? 512 : 1024}
+                  shadow-mapSize-height={mobileSettings.disableShadows ? 512 : 1024}
+                />
+                <pointLight
+                  position={[10, 10, 10]}
+                  intensity={0.6}
+                  distance={40}
+                  decay={2}
+                />
+                <pointLight
+                  position={[-5, -5, 5]}
+                  intensity={0.4}
+                  color="#ff6b35"
+                  distance={30}
+                  decay={2}
+                />
+                {/* Red accent lighting for Sith atmosphere */}
+                <pointLight
+                  position={[2, 2, 0]}
+                  intensity={1.2}
+                  color="#ff3333"
+                  distance={15}
+                  decay={2}
+                />
+              </Suspense>
+            </Canvas>
+          </Canvas3DErrorBoundary>
+        </div>
+      )}
 
       {/* Main Content Grid */}
       <div
@@ -216,7 +220,7 @@ export default function HeroSection() {
               x: 0,
             }}
             transition={{
-              duration: isMobile ? 0.3 : 0.8,
+              duration: mobileSettings.reduceAnimationDuration ? 0.2 : isMobile ? 0.3 : 0.8,
               delay: isMobile ? 0 : 0.1,
               ease: "easeOut",
             }}
@@ -240,8 +244,8 @@ export default function HeroSection() {
 
             <motion.div
               className="text-lg sm:text-xl md:text-2xl text-imperial-gold mt-4 sm:mt-6 font-light"
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              animate={mobileSettings.disableComplexAnimations ? {} : { opacity: [0.7, 1, 0.7] }}
+              transition={mobileSettings.disableComplexAnimations ? {} : { duration: mobileSettings.reduceAnimationDuration ? 2 : 3, repeat: Infinity }}
             >
               <span className="font-orbitron">
                 "Your lack of modern development skills disturbs me."
@@ -257,7 +261,7 @@ export default function HeroSection() {
               x: 0,
             }}
             transition={{
-              duration: isMobile ? 0.3 : 0.8,
+              duration: mobileSettings.reduceAnimationDuration ? 0.2 : isMobile ? 0.3 : 0.8,
               delay: isMobile ? 0 : 0.3,
               ease: "easeOut",
             }}
@@ -310,7 +314,7 @@ export default function HeroSection() {
               y: 0,
             }}
             transition={{
-              duration: isMobile ? 0.3 : 0.8,
+              duration: mobileSettings.reduceAnimationDuration ? 0.2 : isMobile ? 0.3 : 0.8,
               delay: isMobile ? 0 : 0.5,
               ease: "easeOut",
             }}
@@ -319,7 +323,7 @@ export default function HeroSection() {
           >
             <motion.button
               className="group px-8 py-4 bg-gradient-to-r from-imperial-red to-imperial-red/80 text-imperial-white font-orbitron font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-imperial-red/20 glass-btn glass-imperial flex items-center justify-center space-x-3"
-              whileHover={isMobile ? {} : { scale: 1.02 }}
+              whileHover={mobileSettings.disableHoverEffects ? {} : { scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() =>
                 document
@@ -334,7 +338,7 @@ export default function HeroSection() {
 
             <motion.button
               className="group px-8 py-4 border-2 border-imperial-gold text-imperial-gold font-orbitron font-bold rounded-2xl transition-all duration-300 hover:bg-imperial-gold hover:text-space-dark glass-btn glass-gold flex items-center justify-center space-x-3"
-              whileHover={isMobile ? {} : { scale: 1.02 }}
+              whileHover={mobileSettings.disableHoverEffects ? {} : { scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <Download className="w-5 h-5" />
@@ -352,7 +356,7 @@ export default function HeroSection() {
             scale: 1,
           }}
           transition={{
-            duration: isMobile ? 0.3 : 1,
+            duration: mobileSettings.reduceAnimationDuration ? 0.2 : isMobile ? 0.3 : 1,
             delay: isMobile ? 0 : 0.7,
             ease: "easeOut",
           }}
@@ -361,7 +365,7 @@ export default function HeroSection() {
           {/* Glass Panel Background */}
           <div className="absolute inset-0 glass-panel glass-imperial rounded-3xl opacity-30" />
 
-          {!isMobile ? (
+          {!isMobile && !mobileSettings.disable3D ? (
             <div className="w-full h-full relative">
               {/* Main 3D Darth Vader Model */}
               <div className="absolute inset-0 flex items-center justify-center">
@@ -453,38 +457,52 @@ export default function HeroSection() {
             <div className="w-full h-full relative flex items-center justify-center">
               <motion.div
                 className="relative z-10"
-                animate={{
-                  scale: [1, 1.02, 1],
-                  rotateY: [0, 2, -2, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
+                animate={
+                  mobileSettings.disableComplexAnimations
+                    ? {}
+                    : {
+                        scale: [1, 1.02, 1],
+                        rotateY: [0, 2, -2, 0],
+                      }
+                }
+                transition={
+                  mobileSettings.disableComplexAnimations
+                    ? {}
+                    : {
+                        duration: mobileSettings.reduceAnimationDuration ? 2 : 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }
+                }
               >
                 <SVGDarthVader className="w-72 h-80 drop-shadow-2xl" />
               </motion.div>
 
               {/* Mobile breathing effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-imperial-red/10 via-transparent to-imperial-red/10 rounded-3xl"
-                animate={{
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
+              {!mobileSettings.disableComplexAnimations && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-imperial-red/10 via-transparent to-imperial-red/10 rounded-3xl"
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{
+                    duration: mobileSettings.reduceAnimationDuration ? 2 : 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              )}
 
               {/* Imperial symbol overlay */}
               <motion.div
                 className="absolute top-4 right-4 w-12 h-12 glass-panel glass-imperial rounded-full flex items-center justify-center"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                animate={mobileSettings.disableComplexAnimations ? {} : { rotate: 360 }}
+                transition={
+                  mobileSettings.disableComplexAnimations
+                    ? {}
+                    : { duration: 20, repeat: Infinity, ease: "linear" }
+                }
               >
                 <div className="w-6 h-6 bg-imperial-gold rounded-full opacity-80" />
               </motion.div>
@@ -494,7 +512,7 @@ export default function HeroSection() {
       </div>
 
       {/* Force Lightning Effects (Desktop Only) */}
-      {!isMobile && isInteracting && (
+      {!isMobile && !mobileSettings.disableComplexAnimations && isInteracting && (
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(3)].map((_, i) => (
             <motion.div
@@ -510,7 +528,7 @@ export default function HeroSection() {
                 scaleY: [0, 1, 0],
               }}
               transition={{
-                duration: 0.5,
+                duration: mobileSettings.reduceAnimationDuration ? 0.3 : 0.5,
                 repeat: Infinity,
                 delay: i * 0.2,
               }}

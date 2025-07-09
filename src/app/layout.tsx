@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 import "./globals.css";
+import MobilePerformanceMonitor from "@/components/MobilePerformanceMonitor";
 
 export const metadata: Metadata = {
   title: "Darth Lisan - Dark Side Developer",
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         >
           {children}
+          <MobilePerformanceMonitor />
         </div>
       </body>
     </html>

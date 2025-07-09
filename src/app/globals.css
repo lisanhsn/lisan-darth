@@ -94,6 +94,8 @@
     overscroll-behavior: none;
     /* Limit touch actions for better performance */
     touch-action: pan-y;
+    /* Reduce memory usage */
+    contain: layout style paint;
   }
 
   /* Optimize animations for mobile */
@@ -110,6 +112,137 @@
       animation: none !important;
       transition: none !important;
     }
+  }
+
+  /* Reduce blur effects on mobile for better performance */
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Optimize glass effects for mobile */
+  .glass-panel,
+  .glass-card,
+  .glass-btn {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Reduce shadow complexity on mobile */
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* Low-end device optimizations */
+@media (max-width: 480px) {
+  /* Disable complex effects on very small screens */
+  .glass-panel::before,
+  .glass-card::before,
+  .glass-btn::before {
+    display: none;
+  }
+
+  /* Simplify gradients */
+  .bg-gradient-to-br,
+  .bg-gradient-to-r {
+    background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  }
+
+  /* Reduce animation complexity */
+  .animate-pulse,
+  .animate-bounce {
+    animation: none;
+  }
+
+  /* Optimize text rendering */
+  * {
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: none;
+  }
+
+  /* Reduce layout complexity */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Simplify shadows */
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none;
+  }
+}
+
+/* Mobile-specific performance classes */
+.mobile-optimized {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+.mobile-3d-fallback {
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-star-field-fallback {
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+  position: absolute;
+  inset: 0;
+}
+
+.stars-static {
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: star-drift 20s linear infinite;
+}
+
+.mobile-character-fallback {
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  border: 2px solid var(--imperial-red);
+  border-radius: 1rem;
+}
+
+.mobile-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-primary);
+}
+
+.mobile-content-container {
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-optimized * {
+    touch-action: manipulation;
+  }
+  
+  /* Disable hover effects on touch devices */
+  .hover\:scale-110:hover,
+  .hover\:bg-imperial-gold:hover,
+  .hover\:text-space-dark:hover {
+    transform: none !important;
+    background-color: inherit !important;
+    color: inherit !important;
   }
 }
 
